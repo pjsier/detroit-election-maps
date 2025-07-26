@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+.venv
+*.env*
+!.env.sample
+*.pmtiles
+*.mbtiles
+tiles/**
+!tiles/.keep
+site/assets/**
+data/output/**
+!data/output/.keep
+data/precincts/**
+!data/precincts/.keep
+dist/**
+site/img/**
+!site/img/.keep

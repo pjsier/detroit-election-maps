@@ -1,0 +1,68 @@
+{
+  "name": "detroit-election-maps",
+  "version": "0.1.0",
+  "author": "Pat Sier",
+  "license": "MIT",
+  "type": "module",
+  "description": "Maps and data for Detroit elections",
+  "scripts": {
+    "format": "prettier --write **/*.{js,jsx,css} !dist",
+    "start": "NODE_ENV=development eleventy --serve",
+    "build": "NODE_ENV=production eleventy",
+    "lint": "eslint ./src/js/**/*.{js,jsx}",
+    "style": "prettier --check src/**/**.{js,jsx,css}"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "@11ty/eleventy-img": "^6.0.4",
+    "@11ty/eleventy-plugin-vite": "^7.0.0",
+    "@babel/eslint-parser": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "babel-preset-solid": "^1.9.6",
+    "eslint": "^9.31.0",
+    "eslint-plugin-solid": "^0.14.5",
+    "prettier": "^3.6.2",
+    "vite": "^7.0.4",
+    "vite-plugin-solid": "^2.11.7"
+  },
+  "dependencies": {
+    "d3-dsv": "^3.0.1",
+    "maplibre-gl": "^5.6.1",
+    "solid-js": "^1.9.7"
+  },
+  "eslintConfig": {
+    "extends": [
+      "eslint:recommended",
+      "plugin:solid/recommended"
+    ],
+    "env": {
+      "browser": true,
+      "commonjs": true,
+      "es6": true,
+      "node": true
+    },
+    "plugins": [
+      "import",
+      "solid"
+    ],
+    "parser": "@babel/eslint-parser",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "requireConfigFile": false,
+      "babelOptions": {
+        "presets": [
+          "@babel/preset-env",
+          "babel-preset-solid"
+        ]
+      }
+    }
+  },
+  "prettier": {
+    "endOfLine": "lf",
+    "semi": false,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
+  }
+}
