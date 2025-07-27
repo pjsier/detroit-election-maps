@@ -15,3 +15,4 @@ data/precincts/**
 dist/**
 site/img/**
 !site/img/.keep
+deploy-output

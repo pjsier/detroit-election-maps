@@ -13,8 +13,7 @@ export const render = ({ site }) => {
         maxzoom: 12,
         bounds: [-83.287959, 42.255192, -82.910439, 42.450239],
         tiles: [
-          `https://detroit-elections-archive.us-east-1.linodeobjects.com/tiles/precincts-${year}/{z}/{x}/{y}.pbf`,
-          // `https://${site.dataDomain}/tiles/precincts-${year}/{z}/{x}/{y}.pbf`,
+          `https://${site.dataDomain}/tiles/precincts-${year}/{z}/{x}/{y}.pbf`,
         ],
         attribution: "City of Detroit",
         promoteId: "id",

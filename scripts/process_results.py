@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     election_dict = pd.read_excel(file_path, sheet_name=None)
 
-    output_map = {"TURNOUT": "0"}
+    output_map = {"0": "TURNOUT"}
 
     for race in election_dict.keys():
         output_dir = os.path.join(
@@ -37,7 +37,7 @@ if __name__ == "__main__":
             os.path.join(output_dir, f"{race_key}.csv"),
             index=False,
         )
-        output_map[" ".join(race.split(" ")[:-1])] = race_key
+        output_map[race_key] = " ".join(race.split(" ")[:-1])
 
     with open(
         os.path.join(

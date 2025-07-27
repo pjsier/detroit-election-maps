@@ -22,7 +22,7 @@ if (mapContainer) {
             electionOptions={electionOptions}
             azureMapsKey={import.meta.env.VITE_AZURE_MAPS_KEY}
             displayOverrides={{turnout: "Turnout"}}
-            dataDomain={import.meta.env.VITE_DATA_DOMAIN}
+            dataDomain={"data.detroitelectionmaps.org"}
             initialElection={
               params.get("election") ||
               DEFAULT_ELECTION

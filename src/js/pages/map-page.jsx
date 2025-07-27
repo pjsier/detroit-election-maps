@@ -75,7 +75,7 @@ const MapPage = (props) => {
           <h1>
             {props.embedElection
               ? props.elections[state.election].label
-              : "Chicago Elections Archive"}
+              : "Detroit Election Maps"}
           </h1>
           <form method="GET" action="">
             <Show when={!props.embedElection}>

@@ -12,9 +12,7 @@ export default {
   baseurl,
   url: `${host}${baseurl}`,
   domain: host.replace("https://", ""),
-  dataDomain:
-    process.env.DATA_DOMAIN ||
-    "detroit-elections-archive.us-east-1.linodeobjects.com",
+  dataDomain: "data.detroitelectionmaps.org",
   production,
   robots: production,
   plausibleAnalytics: !!process.env.PLAUSIBLE,
@@ -22,7 +20,6 @@ export default {
   azureMapsKey: process.env.VITE_AZURE_MAPS_KEY,
   precinctYears: [2024],
   electionMetadata: {
-    // elections,
     electionOrder: [],
     displayOverrides: {
       turnout: "Turnout",
