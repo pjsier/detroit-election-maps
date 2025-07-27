@@ -1,6 +1,0 @@
-name = "detroit-election-maps"
-
-[[r2_buckets]]
-binding = "ASSET_BUCKET"
-bucket_name = "detroit-election-maps"
-preview_bucket_name = "detroit-election-maps"

@@ -6,14 +6,15 @@
 <meta name="description" content="{{ description or page.description or site.description }}">
 <meta name="author" content="{{ site.author }}">
 
-<link rel="canonical" href="{% if canonical %}{{ canonical }}{% else %}{{ site.url}}{{ page.url }}{% endif %}" />
+{# TODO: Need this to be a full domain, not just / #}
+{# <link rel="canonical" href="{% if canonical %}{{ canonical }}{% else %}{{ site.url}}{{ page.url }}{% endif %}" /> #}
 
 <meta property="og:title" content="{{ title or page.title or site.title }}" />
 <meta property="og:site_name" content="{{ site.name }}" />
 <meta property="og:description" content="{{ description or page.description or site.description }}" />
 <meta property="og:type" content="{{ site.type }}" />
 <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
-<meta property="og:image" content="{{ site.url }}/img/chi-elections-social.png" />
+{# <meta property="og:image" content="{{ site.url }}/img/chi-elections-social.png" /> #}
 <meta property="og:image:alt" content="{{ title or page.title or site.title }}" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -27,11 +28,11 @@
 <meta name="twitter:image:src" content="{{ site.url }}/img/chi-elections-social.png" />
 <meta name="twitter:image:alt" content="{{ title or page.title or site.title }}" />
 
-<link rel="icon" type="image/png" sizes="16x16" href="{{ site.url }}{% resizeImage './src/img/icon.png', '16x16' %}" />
+{# <link rel="icon" type="image/png" sizes="16x16" href="{{ site.url }}{% resizeImage './src/img/icon.png', '16x16' %}" />
 <link rel="icon" type="image/png" sizes="32x32" href="{{ site.url }}{% resizeImage './src/img/icon.png', '32x32' %}" />
 <link rel="apple-touch-icon" sizes="180x180" href="{{ site.url }}{% resizeImage './src/img/icon.png', '180x180' %}" />
 <link rel="manifest" href="{{ site.url }}/manifest.json" />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#ffffff" /> #}
 
 <meta name="azure-maps-key" content="{{ site.azureMapsKey }}" />
 <meta name="data-domain" content="{{ site.dataDomain }}" />

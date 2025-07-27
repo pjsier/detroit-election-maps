@@ -24,7 +24,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("resizeImage", resizeImage)
 
   // TODO: Check if this triggers hot reloading?
-  eleventyConfig.addPassthroughCopy({ src: "assets" })
+  // eleventyConfig.addPassthroughCopy({ src: "assets" })
 
   return {
     dir: {
