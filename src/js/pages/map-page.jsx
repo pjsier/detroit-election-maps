@@ -23,8 +23,6 @@ const MapPage = (props) => {
   })
   const [mapStore] = useMapStore()
   const [popup, setPopup] = usePopup()
-  console.log(props.initialElection)
-  
   createEffect(() => {
     updateQueryParams({
       election: state.election,

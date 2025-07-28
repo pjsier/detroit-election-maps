@@ -5,7 +5,7 @@ import { descending, fromEntries } from "../utils"
 import { getDataCols, getColor } from "../utils/map"
 import { getPrecinctYear, fetchCsvData } from "../utils/data"
 import maplibregl from "maplibre-gl"
-import 'maplibre-gl/dist/maplibre-gl.css';
+import "maplibre-gl/dist/maplibre-gl.css"
 
 const compactAttribControl = () => {
   const control = document.querySelector("details.maplibregl-ctrl-attrib")
@@ -162,12 +162,8 @@ const Map = (props) => {
       })
     }
     map.once("styledata", () => {
-      map.addControl(
-        new maplibregl.NavigationControl({ showCompass: false })
-      )
-      map.addControl(
-        new maplibregl.FullscreenControl({ container: mapRef })
-      )
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }))
+      map.addControl(new maplibregl.FullscreenControl({ container: mapRef }))
       map.resize()
     })
 
