@@ -1133,3 +1133,5 @@ const mapStyle = {
     },
   ],
 }
+
+export default mapStyle
