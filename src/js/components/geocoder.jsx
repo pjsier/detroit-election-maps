@@ -49,7 +49,7 @@ const getResults = ({ query, azureMapsKey }) =>
     .then(({ results }) =>
       results
         .filter(
-          ({ address: { countrySubdivision: state } }) => state === "IL" // Restricting to Illinois, not just bbox
+          ({ address: { countrySubdivision: state } }) => state === "MI" // Restricting to Michigan, not just bbox
         )
         .map(({ type, position: { lat, lon }, ...result }) => ({
           type,
