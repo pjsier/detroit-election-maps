@@ -899,7 +899,7 @@ const mapStyle = {
     {
       id: "precincts",
       type: "fill",
-      source: `precincts-${site.precinctYears.slice(-1)[0]}`,
+      source: `precincts-${PRECINCT_YEARS.slice(-1)[0]}`,
       "source-layer": "precincts",
       paint: {
         "fill-outline-color": [
