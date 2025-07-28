@@ -9,6 +9,7 @@ import { useMapStore } from "../providers/map"
 import { usePopup } from "../providers/popup"
 import { updateQueryParams } from "../utils"
 import { getPrecinctYear } from "../utils/data"
+import mapStyle from "../mapStyle"
 
 const EMBED_MOBILE_CUTOFF = 500
 const MOBILE_CUTOFF = 800
@@ -55,7 +56,7 @@ const MapPage = (props) => {
         race={state.race}
         isMobile={isMobile}
         mapOptions={{
-          style: "/style.json",
+          style: mapStyle,
           minZoom: 8,
           maxZoom: 15,
           hash: true,

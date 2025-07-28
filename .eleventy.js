@@ -33,7 +33,7 @@ export default function (eleventyConfig) {
       includes: "_includes",
       layouts: "_layouts",
     },
-    templateFormats: ["html", "md", "njk", "11ty.js"],
+    templateFormats: ["html", "md", "njk"],
     htmlTemplateEngine: "njk",
     passthroughFileCopy: true,
   }
