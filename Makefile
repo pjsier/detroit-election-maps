@@ -53,11 +53,9 @@ data/precincts/%.mbtiles: data/precincts/%.geojson
 	-L precincts:$< -o $@
 
 data/precincts/precincts-2024.geojson:
-	wget -qO - 'https://data.detroitmi.gov/api/download/v1/items/5d861ef3ba5a43e88dad58062b99f571/geojson?layers=0' | \
+	wget -qO - https://detroitdata.org/dataset/fb070cae-30b2-414e-a56a-7624e8a065e1/resource/cdff6247-8148-4ffb-8857-7ea31e80bbbd/download/cleaned_detroit_precincts_2025.geojson | \
 	mapshaper -i - filetype=geojson \
-	-proj from=EPSG:3857 crs=EPSG:4326 \
-	-rename-fields id=election_precinct \
+	-rename-fields id=PRECINCT \
 	-filter-fields id \
-	-each 'id = id.toString()' \
-	-clean snap-interval=0.0005 \
+	-each 'id = +id.toString()' \
 	-o $@
