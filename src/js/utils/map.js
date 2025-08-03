@@ -14,7 +14,9 @@ export const COLOR_SCHEME = [
 ]
 
 // TODO: Maybe add election and/or race key into this to be safe? Could be many "Johnson"s
-const COLOR_OVERRIDES = {}
+const COLOR_OVERRIDES = {
+  turnout: "#279989",
+}
 
 export const getColor = (candidate, index) =>
   COLOR_OVERRIDES[candidate.replace(" Percent", "")] ||

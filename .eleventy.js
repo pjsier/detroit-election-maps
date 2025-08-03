@@ -23,8 +23,8 @@ export default function (eleventyConfig) {
   eleventyConfig.addNunjucksAsyncShortcode("resizeImage", resizeImage)
   eleventyConfig.addFilter("resizeImage", resizeImage)
 
-  // TODO: Check if this triggers hot reloading?
   eleventyConfig.addPassthroughCopy({ src: "assets" })
+  eleventyConfig.addPassthroughCopy("site/img")
 
   return {
     dir: {

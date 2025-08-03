@@ -25,5 +25,8 @@ export default {
       turnout: "Turnout",
     },
   },
-  nav: [{ url: "/about/", label: "About" }],
+  nav: [
+    { url: "/about/", label: "About" },
+    { url: "https://detroitdata.org/", label: "Data" },
+  ],
 }
