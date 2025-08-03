@@ -8,7 +8,7 @@
 }
 
 #nav-container a {
-  color: #18252a;
+  color: #000;
   text-decoration: none;
 }
 
@@ -59,7 +59,7 @@
   background-color: transparent;
   border: none;
   cursor: pointer;
-  color: #18252a;
+  color: #000;
 }
 
 #nav-toggle [aria-hidden] {
