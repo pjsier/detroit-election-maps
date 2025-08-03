@@ -41,9 +41,10 @@ const MapPage = (props) => {
   const isMobile =
     window.innerWidth < (isEmbedded ? EMBED_MOBILE_CUTOFF : MOBILE_CUTOFF)
 
+    // 42.3368/-83.0983
   const mapViewOptions = isMobile
-    ? { zoom: 9, center: [-83.0932, 42.401] }
-    : { zoom: 9.5, center: [-83.0932, 42.401] }
+    ? { zoom: 9, center: [-83.0983, 42.3368] }
+    : { zoom: 9.5, center: [-83.0983, 42.401] }
 
   return (
     <>
