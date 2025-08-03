@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ site.locale }}">
+  <head>
+    {% include "metadata.njk" %}
+    <meta name="embed" content="true" />
+    {% if embedElection %}
+      <meta name="embed-election" content="{{ embedElection }}" />
+    {% endif %}
+    {% if showEmbedAttribution %}
+      <meta name="embed-attribution" content="true" />
+    {% endif %}
+    <script src="https://pym.nprapps.org/pym.v1.min.js" defer></script>
+  </head>
+  <body>
+    <main id="main" class="map">
+    </main>
+    <script type="module" src="{{ '/assets/main.js' | url }}"></script>
+  </body>
+</html>

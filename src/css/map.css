@@ -1,3 +1,9 @@
 main.map {
   min-height: calc(100vh - 48px);
 }
+
+.embedded html,
+.embedded body,
+.embedded main.map {
+  min-height: 650px;
+}

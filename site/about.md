@@ -23,7 +23,7 @@ As an example, <https://detroitelectionmaps.org/?election=251> would be become <
 Then, take that URL and copy it into your CMS or site's code in quotes after `data-pym-src` like this:
 
 ```html
-<div data-pym-title="Title of your embed" data-pym-src="https://detroitelectionmaps.org/...">Loading...</div>
+<div data-pym-title="Title of your embed" data-pym-src="https://detroitelectionmaps.org/embed/...">Loading...</div>
 <script type="text/javascript" src="https://pym.nprapps.org/pym.v1.min.js"></script>
 ```
 
