@@ -7,7 +7,7 @@ const host = production ? process.env.SITE_HOST || "" : "http://0.0.0.0:8080"
 export default {
   name: "Detroit Election Maps",
   title: "Detroit Election Maps",
-  description: "",
+  description: "Explore precinct-level results for Detroit elections",
   type: "website",
   baseurl,
   url: `${host}${baseurl}`,
