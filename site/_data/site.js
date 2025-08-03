@@ -1,16 +1,16 @@
 const production = process.env.NODE_ENV === "production"
 
-const baseurl = production ? "" : ""
-
-const host = production ? process.env.SITE_HOST || "" : "http://0.0.0.0:8080"
+const host = production
+  ? "https://detroitelectionmaps.org"
+  : "http://0.0.0.0:8080"
 
 export default {
   name: "Detroit Election Maps",
   title: "Detroit Election Maps",
   description: "Explore precinct-level results for Detroit elections",
   type: "website",
-  baseurl,
-  url: `${host}${baseurl}`,
+  baseurl: host,
+  url: host,
   domain: host.replace("https://", ""),
   dataDomain: "data.detroitelectionmaps.org",
   production,
