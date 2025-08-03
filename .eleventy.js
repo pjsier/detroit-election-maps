@@ -1,17 +1,5 @@
 import EleventyVitePlugin from "@11ty/eleventy-plugin-vite"
 import solidPlugin from "vite-plugin-solid"
-import Image from "@11ty/eleventy-img"
-
-async function resizeImage(src, sizes, outputFormat = "png") {
-  const stats = await Image(src, {
-    widths: [+sizes.split("x")[0]],
-    formats: [outputFormat],
-    outputDir: "./site/img",
-  })
-
-  const props = stats[outputFormat].slice(-1)[0]
-  return props.url
-}
 
 export default function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyVitePlugin, {
@@ -20,11 +8,7 @@ export default function (eleventyConfig) {
     },
   })
 
-  eleventyConfig.addNunjucksAsyncShortcode("resizeImage", resizeImage)
-  eleventyConfig.addFilter("resizeImage", resizeImage)
-
   eleventyConfig.addPassthroughCopy({ src: "assets" })
-  eleventyConfig.addPassthroughCopy("site/img")
 
   return {
     dir: {
