@@ -60,7 +60,7 @@ const aggregateElection = (data, election, race) => {
   return { candidates, candidateColors, electionResults }
 }
 
-const createPrecinctLayerDefinition = (data, election, race, year) => ({
+const createPrecinctLayerDefinition = (data, election, race, year, maxColorScale) => ({
   layerDefinition: {
     id: "precincts",
     source: `precincts-${getPrecinctYear(election, +year)}`,
@@ -84,7 +84,7 @@ const createPrecinctLayerDefinition = (data, election, race, year) => ({
           ["feature-state", "colorValue"],
           0,
           "#ffffff",
-          100,
+          maxColorScale,
           ["feature-state", "color"],
         ],
       ],
@@ -104,7 +104,7 @@ const createPrecinctLayerDefinition = (data, election, race, year) => ({
   legendData: aggregateElection(data, election, race),
 })
 
-function setFeatureData(map, dataCols, source, feature) {
+function processFeatureData(dataCols, feature) {
   const featureData = fromEntries(
     Object.entries(feature).filter(([col]) => dataCols.includes(col))
   )
@@ -115,6 +115,21 @@ function setFeatureData(map, dataCols, source, feature) {
     featureDataEntries[featureDataValues.indexOf(colorValue)][0]
   )
 
+  return {
+    feature,
+    colorValue,
+    color: getColor(featureDataEntries[colorIndex][0], colorIndex),
+  }
+}
+
+function getMaxColorScale(values) {
+  const sortedAsc = [...values].sort((a, b) => a - b)
+  const index = Math.ceil((0.9 * sortedAsc.length) - 1)
+  // Add 10% to the 90th percentile value, but cap to 100%
+  return Math.min(100, sortedAsc[index] + 10)
+}
+
+function setFeatureData(map, source, feature, colorValue, color) {
   map.setFeatureState(
     {
       source,
@@ -122,8 +137,8 @@ function setFeatureData(map, dataCols, source, feature) {
       id: feature.id,
     },
     {
-      color: getColor(featureDataEntries[colorIndex][0], colorIndex),
-      colorValue: colorValue,
+      color,
+      colorValue,
       ...feature,
     }
   )
@@ -182,13 +197,17 @@ const Map = (props) => {
     )
     if (canceled) return
 
+    let dataCols = getDataCols(data[0] || [])
+    const featureData = data.map((feature) => processFeatureData(dataCols, feature))
+    const maxColorScale = getMaxColorScale(featureData.map(({ colorValue}) => colorValue))
+
     const def = createPrecinctLayerDefinition(
       data,
       props.election,
       props.race,
-      props.year
+      props.year,
+      maxColorScale,
     )
-    let dataCols = getDataCols(data[0] || [])
     setMapStore({ ...def.legendData })
     // Close popup on layer change
     setPopup({ click: false, hover: false })
@@ -199,8 +218,8 @@ const Map = (props) => {
         source: mapSource(),
         sourceLayer: "precincts",
       })
-      data.forEach((feature) => {
-        setFeatureData(map, dataCols, mapSource(), feature)
+      featureData.forEach(({ feature, colorValue, color }) => {
+        setFeatureData(map, mapSource(), feature, colorValue, color)
       })
       mapStore.map.addLayer(def.layerDefinition, "place_other")
     }
