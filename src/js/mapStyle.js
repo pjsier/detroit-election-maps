@@ -24,18 +24,15 @@ const mapStyle = {
     openmaptiles: {
       type: "vector",
       maxzoom: 14,
-      tiles: [
-        "https://midwest-openmaptiles.us-east-1.linodeobjects.com/{z}/{x}/{y}.pbf",
-      ],
+      tiles: ["https://openmaptiles.detroitelectionmaps.org/{z}/{x}/{y}.pbf"],
       attribution:
         '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
     },
     ...precinctSources,
   },
-  sprite:
-    "https://midwest-openmaptiles.us-east-1.linodeobjects.com/klokantech-basic/sprite",
+  sprite: "https://openmaptiles.detroitelectionmaps.org/positron/sprite",
   glyphs:
-    "https://midwest-openmaptiles.us-east-1.linodeobjects.com/fonts/{fontstack}/{range}.pbf",
+    "https://openmaptiles.detroitelectionmaps.org/fonts/{fontstack}/{range}.pbf",
   layers: [
     {
       id: "background",

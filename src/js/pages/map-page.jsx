@@ -60,6 +60,7 @@ const MapPage = (props) => {
           hash: true,
           dragRotate: false,
           attributionControl: false,
+          maxBounds: [-84.158, 41.723, -82.375, 43.168],
           ...mapViewOptions,
         }}
       />
