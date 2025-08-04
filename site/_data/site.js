@@ -27,6 +27,9 @@ export default {
   },
   nav: [
     { url: "/about/", label: "About" },
-    { url: "https://detroitdata.org/", label: "Data" },
+    {
+      url: "https://detroitdata.org/dataset/detroit-election-results",
+      label: "Data",
+    },
   ],
 }

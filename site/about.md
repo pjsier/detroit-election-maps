@@ -10,7 +10,7 @@ This site is an open source, volunteer project to make it easier to access the r
 
 ## Data access
 
-Detroit Data
+You can access the source data at Detroit Data: [Detroit Election Results](https://detroitdata.org/dataset/detroit-election-results)
 
 ## Embed the map
 
