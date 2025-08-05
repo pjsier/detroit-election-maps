@@ -14,7 +14,7 @@ import mapStyle from "../mapStyle"
 const EMBED_MOBILE_CUTOFF = 500
 const MOBILE_CUTOFF = 800
 
-const UNOFFICIAL_RESULTS = []
+const UNOFFICIAL_RESULTS = ["2025-primary"]
 
 const MapPage = (props) => {
   const [state, setState] = createStore({

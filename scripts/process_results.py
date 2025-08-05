@@ -30,6 +30,7 @@ if __name__ == "__main__":
             sheet_name=race,
             skiprows=6,
         ).rename(columns={"Precinct": "id"})
+        race_name = election_df.columns[0]
         # Load the clean race title from the ID
         election_df["id"] = election_df["id"].apply(lambda p: p.split(" ")[-1])
         election_df = election_df[election_df.columns[1:]]
@@ -37,7 +38,7 @@ if __name__ == "__main__":
             os.path.join(output_dir, f"{race_key}.csv"),
             index=False,
         )
-        output_map[race_key] = " ".join(race.split(" ")[:-1])
+        output_map[race_key] = race_name
 
     with open(
         os.path.join(

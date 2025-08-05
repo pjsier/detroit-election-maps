@@ -2,6 +2,11 @@ main.map {
   min-height: calc(100vh - 48px);
 }
 
+html.embedded main.map,
+html.not-embedded main.map {
+  min-height: 100vh;
+}
+
 .embedded html,
 .embedded body,
 .embedded main.map {
