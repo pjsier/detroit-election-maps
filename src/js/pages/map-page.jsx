@@ -17,12 +17,14 @@ const MOBILE_CUTOFF = 800
 const UNOFFICIAL_RESULTS = ["2025-primary"]
 
 const MapPage = (props) => {
+  const [mapStore, setMapStore] = useMapStore()
+  const [popup, setPopup] = usePopup()
   const [state, setState] = createStore({
     election: props.initialElection,
     race: props.initialRace,
+    displayCandidates: mapStore?.candidates.map(({ name }) => name) || [],
   })
-  const [mapStore] = useMapStore()
-  const [popup, setPopup] = usePopup()
+
   createEffect(() => {
     updateQueryParams({
       election: state.election,
@@ -133,6 +135,14 @@ const MapPage = (props) => {
             candidates={mapStore.candidates || []}
             totalVotes={mapStore.electionResults.total}
             displayOverrides={props.displayOverrides}
+            displayCandidates={state.displayCandidates}
+            onChange={(candidate, checked) => {
+              setState({
+                displayCandidates: checked
+                  ? [...new Set([...state.displayCandidates, candidate])]
+                  : state.displayCandidates.filter((c) => c !== candidate),
+              })
+            }}
           />
           <Show when={UNOFFICIAL_RESULTS.includes(state.election)}>
             <p class="unofficial-notice">

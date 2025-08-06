@@ -9,25 +9,36 @@ const Legend = (props) => (
       <span class="ramp-label">0%</span>
       <span class="ramp-label">100%</span>
     </div>
-    <For each={props.candidates}>
-      {({ name, color, votes }) => (
-        <div class="legend-row">
-          <div class="legend-row-details">
-            <span class="color" style={{ "background-color": color }} />{" "}
-            <span class="label">{props.displayOverrides[name] || name}</span>
-          </div>
-          <div class="numbers">
-            <div>{votes.toLocaleString()}</div>
-            <div class="percent">
-              {((votes / props.totalVotes) * 100)
-                .toFixed(1)
-                .replace("100.0", "100")}
-              %
+    <p>{JSON.stringify(props.displayCandidates)}</p>
+    <fieldset>
+      <For each={props.candidates}>
+        {({ name, color, votes }) => (
+          <div class="legend-row">
+            <div class="legend-row-details">
+              <label class="label">
+                <span class="color" style={{ "background-color": color }} />{" "}
+                <input
+                  type="checkbox"
+                  name="displayCandidates"
+                  checked={props.displayCandidates.includes(name)}
+                  onChange={(e) => props.onChange(name, e.target.checked)}
+                />
+                <span>{props.displayOverrides[name] || name}</span>
+              </label>
+            </div>
+            <div class="numbers">
+              <div>{votes.toLocaleString()}</div>
+              <div class="percent">
+                {((votes / props.totalVotes) * 100)
+                  .toFixed(1)
+                  .replace("100.0", "100")}
+                %
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </For>
+        )}
+      </For>
+    </fieldset>
   </>
 )
 

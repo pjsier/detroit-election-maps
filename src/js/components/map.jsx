@@ -57,7 +57,12 @@ const aggregateElection = (data, election, race) => {
   } else if (isNaN(electionResults.total)) {
     electionResults.total = electionResults.ballots
   }
-  return { candidates, candidateColors, electionResults }
+  return {
+    candidateColors,
+    electionResults,
+    candidates,
+    displayCandidates: candidates.map(({ name }) => name),
+  }
 }
 
 const createPrecinctLayerDefinition = (
@@ -110,21 +115,27 @@ const createPrecinctLayerDefinition = (
   legendData: aggregateElection(data, election, race),
 })
 
-function processFeatureData(dataCols, feature) {
-  const featureData = fromEntries(
-    Object.entries(feature).filter(([col]) => dataCols.includes(col))
-  )
-  const featureDataEntries = [...Object.entries(featureData)]
-  const featureDataValues = featureDataEntries.map(([, value]) => value)
-  const colorValue = Math.max(...featureDataValues)
-  const colorIndex = dataCols.indexOf(
-    featureDataEntries[featureDataValues.indexOf(colorValue)][0]
-  )
+function processFeatureData(dataCols, feature, displayCandidates = []) {
+  const featureData = Object.entries(feature)
+    .filter(([col]) => dataCols.includes(col))
+    .map(([label, value]) => ({ label, value }))
+
+  const maxFeature = featureData.reduce((acc, item, index) => {
+    if (
+      item.value > acc.value &&
+      (displayCandidates.includes(item.label) || displayCandidates.length === 0)
+    ) {
+      return { ...item, index }
+    }
+    return acc
+  })
+
+  const colorIndex = dataCols.indexOf(maxFeature.label)
 
   return {
     feature,
-    colorValue,
-    color: getColor(featureDataEntries[colorIndex][0], colorIndex),
+    colorValue: maxFeature.value,
+    color: getColor(maxFeature.label, colorIndex),
   }
 }
 
@@ -195,7 +206,14 @@ const Map = (props) => {
   // eslint-disable-next-line solid/reactivity
   createEffect(async () => {
     let canceled = false
+
     onCleanup(() => (canceled = true))
+
+    const displayCandidates = (props.displayCandidates || []).map((c) =>
+      c === "turnout" ? c : `${c} Percent`
+    )
+    console.log(displayCandidates)
+
     const data = await fetchCsvData(
       props.dataDomain,
       props.election,
@@ -205,7 +223,7 @@ const Map = (props) => {
 
     let dataCols = getDataCols(data[0] || [])
     const featureData = data.map((feature) =>
-      processFeatureData(dataCols, feature)
+      processFeatureData(dataCols, feature, displayCandidates)
     )
     const maxColorScale = getMaxColorScale(
       featureData.map(({ colorValue }) => colorValue)
@@ -218,7 +236,15 @@ const Map = (props) => {
       props.year,
       maxColorScale
     )
-    setMapStore({ ...def.legendData })
+    console.log(def.legendData)
+    if (
+      def.legendData.election !== props.election ||
+      def.legendData.race !== props.race ||
+      def.legendData.year !== props.year
+    ) {
+      setMapStore({ ...def.legendData })
+    }
+    // setMapStore({ ...def.legendData })
     // Close popup on layer change
     setPopup({ click: false, hover: false })
 
