@@ -61,7 +61,7 @@ const elections = {
     races: {
       0: "Turnout",
       1: "Straight Party Ticket",
-      2: "Electors of President",
+      2: "US President",
       3: "US Senator",
       6: "US Rep. 12th District",
       7: "US Rep. 13th District",
