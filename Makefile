@@ -28,6 +28,14 @@ build-output:
 	cp -r data/output/* deploy-output
 	find deploy-output -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
 
+data/output/2025/general/0.csv:	data/elections/2025/general/0.json
+	mkdir -p $(dir $@)
+	cat $< | poetry run python scripts/process_enhancedvoting_turnout.py > $@
+
+data/output/2025/general/%.csv:	data/elections/2025/general/%.json
+	mkdir -p $(dir $@)
+	cat $< | poetry run python scripts/process_enhancedvoting.py > $@
+
 data/output/%/: data/elections/%.xlsx data/elections/%-turnout.json
 	poetry run python scripts/process_results.py $<
 	poetry run python scripts/process_turnout.py $(filter-out $<,$^)

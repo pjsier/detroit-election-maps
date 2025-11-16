@@ -124,6 +124,19 @@ const elections = {
       15: "City Council, District 7",
     },
   },
+  "2025-general": {
+    year: 2025,
+    label: "2025 General",
+    date: "11/4/2025",
+    races: {
+      0: "Turnout",
+      2: "Mayor",
+      3: "City Council, At-Large",
+      13: "City Council, District 2",
+      14: "City Council, District 5",
+      15: "City Council, District 7",
+    },
+  },
 }
 
 export default elections
