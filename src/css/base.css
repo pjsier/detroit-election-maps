@@ -538,6 +538,10 @@ p.embed-attribution {
   display: block;
 }
 
+.text-bold {
+  font-weight: bold;
+}
+
 select {
   background-color: #f4f4f4;
 }

@@ -1,4 +1,4 @@
-export const DEFAULT_ELECTION = "2024-general"
+export const DEFAULT_ELECTION = "2025-primary"
 
 export const COLOR_SCHEME = [
   "#1f77b4",
@@ -16,6 +16,11 @@ export const COLOR_SCHEME = [
 // TODO: Maybe add election and/or race key into this to be safe? Could be many "Johnson"s
 const COLOR_OVERRIDES = {
   turnout: "#279989",
+  "Danetta Lynese Simpson": "#7f7f7f",
+  "Saunteel Jenkins": "#2ca02c",
+  "John Barlow": "#8c564b",
+  "Fred Durhal": "#17becf",
+  "Janee' L. Ayers": "#17becf",
 }
 
 export const getColor = (candidate, index) =>

@@ -111,6 +111,19 @@ const elections = {
       1169: "Judge of 36th District Court, Incumbent, Partial",
     },
   },
+  "2025-primary": {
+    year: 2025,
+    label: "2025 Primary",
+    date: "8/5/2025",
+    races: {
+      0: "Turnout",
+      2: "Mayor",
+      3: "City Council, At-Large",
+      13: "City Council, District 2",
+      14: "City Council, District 5",
+      15: "City Council, District 7",
+    },
+  },
 }
 
 export default elections

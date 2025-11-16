@@ -14,3 +14,4 @@ data/precincts/**
 !data/precincts/.keep
 dist/**
 deploy-output
+/*.csv

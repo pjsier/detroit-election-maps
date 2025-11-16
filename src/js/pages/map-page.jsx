@@ -134,11 +134,9 @@ const MapPage = (props) => {
             totalVotes={mapStore.electionResults.total}
             displayOverrides={props.displayOverrides}
           />
-          <Show when={UNOFFICIAL_RESULTS.includes(state.election)}>
-            <p class="unofficial-notice">
-              Unofficial results as of Apr. 8, 3:25pm
-            </p>
-          </Show>
+          <p class="text-bold">
+            Does not include early or absentee voting totals
+          </p>
           <Show when={props.embedAttribution}>
             <a
               class="embed-attribution"

@@ -17,7 +17,7 @@ const Legend = (props) => (
             <span class="label">{props.displayOverrides[name] || name}</span>
           </div>
           <div class="numbers">
-            <div>{votes.toLocaleString()}</div>
+            <div class="hidden">{votes.toLocaleString()}</div>
             <div class="percent">
               {((votes / props.totalVotes) * 100)
                 .toFixed(1)
