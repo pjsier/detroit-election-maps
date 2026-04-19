@@ -60,6 +60,9 @@ data/precincts/%.mbtiles: data/precincts/%.geojson
 	--force \
 	-L precincts:$< -o $@
 
+# data/counting-boards/counting-boards-2024.geojson: data/precincts/precincts-2024.geojson
+
+
 data/precincts/precincts-2024.geojson:
 	wget -qO - https://detroitdata.org/dataset/fb070cae-30b2-414e-a56a-7624e8a065e1/resource/cdff6247-8148-4ffb-8857-7ea31e80bbbd/download/cleaned_detroit_precincts_2025.geojson | \
 	mapshaper -i - filetype=geojson \
