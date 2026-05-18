@@ -15,6 +15,9 @@ const PopupContent = (props) => {
   return (
     <>
       <h3>Precinct {props?.feature?.id}</h3>
+      <Show when={!!props?.feature?.board}>
+        <h4>Counting Board {props.feature.board}</h4>
+      </Show>
       <For each={candidateData()}>
         {({ label, value }) => (
           <div class="legend-row">

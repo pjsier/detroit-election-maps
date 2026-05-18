@@ -18,6 +18,7 @@ const MapPage = (props) => {
   const [state, setState] = createStore({
     election: props.initialElection,
     race: props.initialRace,
+    boards: props.initialBoards,
   })
   const [mapStore] = useMapStore()
   const [popup, setPopup] = usePopup()
@@ -25,6 +26,7 @@ const MapPage = (props) => {
     updateQueryParams({
       election: state.election,
       race: state.race,
+      boards: state.boards,
     })
   })
 
@@ -50,6 +52,7 @@ const MapPage = (props) => {
         year={year()}
         election={state.election}
         race={state.race}
+        boards={state.boards}
         isMobile={isMobile}
         mapOptions={{
           style: mapStyle,
@@ -115,6 +118,10 @@ const MapPage = (props) => {
                 </select>
               </div>
             </Show>
+            <div>
+              <label><input type="radio" checked={state.boards} onClick={() => setState({ boards: true })}/>All votes</label>
+              <label><input type="radio" checked={!state.boards} onClick={() => setState({ boards: false })} />Election day</label>
+            </div>
             <div class="select">
               <select
                 aria-label="Race"

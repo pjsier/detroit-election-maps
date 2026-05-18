@@ -28,17 +28,8 @@ build-output:
 	cp -r data/output/* deploy-output
 	find deploy-output -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
 
-data/output/2025/general/0.csv:	data/elections/2025/general/0.json
-	mkdir -p $(dir $@)
-	cat $< | poetry run python scripts/process_enhancedvoting_turnout.py > $@
-
-data/output/2025/general/%.csv:	data/elections/2025/general/%.json
-	mkdir -p $(dir $@)
-	cat $< | poetry run python scripts/process_enhancedvoting.py > $@
-
-data/output/%/: data/elections/%.xlsx data/elections/%-turnout.json
-	poetry run python scripts/process_results.py $<
-	poetry run python scripts/process_turnout.py $(filter-out $<,$^)
+data/output/%/: data/results/%.pdf
+	poetry run python scripts/process_wayne_pdf.py $< $@
 
 tiles/%/: data/precincts/%.mbtiles
 	mkdir -p $@
@@ -60,8 +51,11 @@ data/precincts/%.mbtiles: data/precincts/%.geojson
 	--force \
 	-L precincts:$< -o $@
 
-# data/counting-boards/counting-boards-2024.geojson: data/precincts/precincts-2024.geojson
+data/results/2025/general.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/detpcts11425off.pdf
 
+data/results/2025/primary.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/new-folder/detaug25pbpo.pdf
 
 data/precincts/precincts-2024.geojson:
 	wget -qO - https://detroitdata.org/dataset/fb070cae-30b2-414e-a56a-7624e8a065e1/resource/cdff6247-8148-4ffb-8857-7ea31e80bbbd/download/cleaned_detroit_precincts_2025.geojson | \

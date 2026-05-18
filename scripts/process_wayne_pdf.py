@@ -1,8 +1,12 @@
+import csv
+import os
 import re
 import sys
 
 import pandas as pd
 import pdfplumber
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def slugify(text):
@@ -73,7 +77,12 @@ def extract_race_title(page):
     if "- 2" in re.sub(r"\s+", " ", race_title):
         race_title = race_title.split("- 2")[0]
 
-    return slugify(race_title)
+    race_title_slug = slugify(race_title)
+    # Sometimes the next line gets pulled in, so strip it out manually if it does
+    if "-voters" in race_title_slug:
+        race_title_slug = race_title_slug.split("-voters")[0]
+
+    return race_title_slug
 
 
 def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
@@ -139,7 +148,23 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
             row_data[col_idx] = (row_data[col_idx] + " " + w["text"].strip()).strip()
         records.append([current_precinct, row["vote_type"]] + row_data)
 
-    return pd.DataFrame(records, columns=all_headers)
+    return pd.DataFrame(
+        records, columns=[header.replace("NP -", "").strip() for header in all_headers]
+    )
+
+
+def specific_race_overrides(df_map):
+    if (
+        ("mayor" in df_map)
+        and ("Janice M. Winfrey" in df_map["mayor"].columns)
+        and ("Janice M. Winfrey" not in df_map["clerk"].columns)
+    ):
+        winfrey_df = df_map["mayor"][["Precinct", "Vote Type", "Janice M. Winfrey"]]
+        df_map["clerk"] = pd.merge(
+            df_map["clerk"], winfrey_df, how="left", on=["Precinct", "Vote Type"]
+        )
+        df_map["mayor"] = df_map["mayor"].drop("Janice M. Winfrey", axis=1)
+    return df_map
 
 
 def assert_totals_match(race_name, df):
@@ -155,9 +180,18 @@ def assert_totals_match(race_name, df):
 if __name__ == "__main__":
     input_file = sys.argv[1]
     output_dir = sys.argv[2]
+    year = [val for val in output_dir.split("/") if val.isdigit()][0]
+
+    os.makedirs(output_dir, exist_ok=True)
 
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
+
+    with open(
+        os.path.join(BASE_DIR, "data", "counting-boards", f"{year}.csv"), "r"
+    ) as f:
+        reader = csv.DictReader(f)
+        precinct_board_map = {r["precinct"]: r["board"] for r in reader}
 
     with pdfplumber.open(input_file) as pdf:
         for idx, page in enumerate(pdf.pages):
@@ -166,15 +200,79 @@ if __name__ == "__main__":
             if title is None:
                 print(idx, df.columns)
 
-            if title in df_map and df_map[title].columns.equals(df.columns):
+            if title in df_map:
                 if df_map[title].columns.equals(df.columns):
                     df_map[title] = pd.concat(
                         [df_map[title], df], axis=0, ignore_index=True
                     )
-
+                else:
+                    # If the title is already in the map, but we see different columns,
+                    # then we need to merge rather than concatenate
+                    diff_cols = list(set(df) - set(df_map[title].columns))
+                    df_to_merge = df[["Precinct", "Vote Type"] + diff_cols]
+                    df_map[title] = pd.merge(
+                        df_map[title],
+                        df_to_merge,
+                        on=["Precinct", "Vote Type"],
+                        how="left",
+                    )
             else:
                 df_map[title] = df
 
+    if year == "2025":
+        df_map = specific_race_overrides(df_map)
+
     for race_key, df_val in df_map.items():
+        df_val = df_val.loc[:, ~df_val.columns.duplicated()]
         assert_totals_match(race_key, df_val)
-        df_val.to_csv(f"{output_dir}/{race_key}.csv", index=False)
+        for col in df_val.columns:
+            if col in ["Precinct", "Vote Type", "Turnout (%)"]:
+                continue
+            df_val[col] = (
+                pd.to_numeric(df_val[col], errors="coerce").fillna(0).astype(int)
+            )
+        totals_df = (
+            df_val.loc[df_val["Vote Type"] == "Total"]
+            .rename(
+                columns={
+                    "Precinct": "id",
+                    "Voters Cast": "ballots",
+                    "Registered Voters": "registered",
+                    "Turnout (%)": "turnout",
+                    "Over Votes": "over_votes",
+                    "Under Votes": "under_votes",
+                    "Total Votes": "total",
+                }
+            )
+            .drop("Vote Type", axis=1)
+        )
+
+        precinct_df = totals_df.loc[totals_df["id"].str.contains("Precinct")]
+        precinct_df["id"] = precinct_df["id"].apply(lambda id: id.split(" ")[-1])
+        precinct_df["board"] = precinct_df["id"].map(precinct_board_map)
+        precinct_df["turnout"] = (
+            pd.to_numeric(precinct_df["turnout"].str.rstrip("%"), errors="coerce")
+            .fillna(0)
+            .astype(float)
+        )
+
+        board_df = totals_df.loc[~totals_df["id"].str.contains("Precinct")]
+        board_df["id"] = board_df["id"].apply(lambda id: id.split(" ")[-1])
+        board_df.rename(columns={"id": "board"}, inplace=True)
+        board_df.drop(columns=["registered"], inplace=True)
+
+        precinct_board_agg = (
+            precinct_df.groupby("board").agg({"registered": "sum"}).reset_index()
+        )
+        precinct_board_df = precinct_df[["id", "board"]].merge(
+            precinct_board_agg, on="board", how="left"
+        )
+        precinct_board_df = precinct_board_df.merge(board_df, on="board", how="left")
+        precinct_board_df["turnout"] = (
+            precinct_board_df["ballots"]
+            .div(precinct_board_df["registered"])
+            .mul(100)
+            .round(2)
+        )
+        precinct_df.to_csv(f"{output_dir}/{race_key}.csv", index=False)
+        precinct_board_df.to_csv(f"{output_dir}/{race_key}-cb.csv", index=False)

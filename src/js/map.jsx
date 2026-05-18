@@ -62,7 +62,8 @@ if (mapContainer) {
               params.get("election") ||
               DEFAULT_ELECTION
             }
-            initialRace={params.get("race") || "0"}
+            initialRace={params.get("race") || "mayor"}
+            initialBoards={false}
           />
         </PopupProvider>
       </MapProvider>

@@ -19,11 +19,10 @@ const filterExpression = (data) => [
   ["literal", data.map(({ id }) => id)],
 ]
 
-const aggregateElection = (data, election, race) => {
+const aggregateElection = (data, election, race, boards) => {
   const dataCols = Object.keys(data[0] || {}).filter(
     (row) =>
-      row.includes("Percent") ||
-      ["turnout", "registered", "ballots"].includes(row)
+      row.includes("Percent")
   )
   const candidateNames = dataCols.map((c) => c.replace(" Percent", ""))
 
@@ -31,12 +30,22 @@ const aggregateElection = (data, election, race) => {
     total: 0,
     ...candidateNames.reduce((a, v) => ({ ...a, [v]: 0 }), {}),
   }
-  const electionResults = data.reduce(
-    (agg, val) =>
-      Object.keys(agg).reduce((a, v) => ({ ...a, [v]: agg[v] + val[v] }), {}),
-    aggBase
-  )
-
+  let electionResults = aggBase
+  if (boards) {
+    const countingBoards = []
+    data.forEach((row) => {
+      if (countingBoards.includes(row.board)) return
+      Object.keys(aggBase).forEach((key) => {
+        electionResults[key] += row[key]
+      })
+    })
+  } else {
+    electionResults = data.reduce(
+      (agg, val) =>
+        Object.keys(agg).reduce((a, v) => ({ ...a, [v]: agg[v] + val[v] }), {}),
+      aggBase
+    )
+  }
   const candidates = candidateNames
     .filter((name) => !["ballots", "registered"].includes(name))
     .map((name, idx) => ({
@@ -199,7 +208,8 @@ const Map = (props) => {
     const data = await fetchCsvData(
       props.dataDomain,
       props.election,
-      props.race
+      props.race,
+      props.boards,
     )
     if (canceled) return
 
