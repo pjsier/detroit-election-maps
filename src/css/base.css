@@ -592,6 +592,14 @@ select:focus {
   width: 0.625em;
 }
 
+#legend .radio {
+  padding: 0.25rem 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
 .color-ramp {
   display: flex;
   flex-direction: row;

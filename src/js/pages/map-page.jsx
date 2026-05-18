@@ -118,9 +118,9 @@ const MapPage = (props) => {
                 </select>
               </div>
             </Show>
-            <div>
-              <label><input type="radio" checked={state.boards} onClick={() => setState({ boards: true })}/>All votes</label>
-              <label><input type="radio" checked={!state.boards} onClick={() => setState({ boards: false })} />Election day</label>
+            <div class="radio">
+              <label><input type="radio" name="boards" id="boards-all-votes" checked={state.boards} onClick={() => setState({ boards: true })}/>All votes</label>
+              <label><input type="radio" name="boards" id="boards-election-day" checked={!state.boards} onClick={() => setState({ boards: false })} />Election day</label>
             </div>
             <div class="select">
               <select
@@ -166,6 +166,7 @@ const MapPage = (props) => {
             displayOverrides={props.displayOverrides}
             candidateColors={mapStore.candidateColors}
             feature={popup.feature}
+            boards={state.boards}
           />
         </Popup>
       </Show>
