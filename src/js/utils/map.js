@@ -22,5 +22,12 @@ export const getColor = (candidate, index) =>
   COLOR_OVERRIDES[candidate.replace(" Percent", "")] ||
   COLOR_SCHEME[index % COLOR_SCHEME.length]
 
-export const getDataCols = (row) =>
-  Object.keys(row || {}).filter((col) => col.includes("Percent"))
+export const getDataCols = (row) => {
+  const dataCols = Object.keys(row || {}).filter((col) =>
+    col.includes("Percent")
+  )
+  if (dataCols.length === 0) {
+    return ["turnout"]
+  }
+  return dataCols
+}

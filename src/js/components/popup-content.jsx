@@ -4,10 +4,10 @@ import { getDataCols } from "../utils/map"
 
 const PopupContent = (props) => {
   const candidateData = createMemo(() =>
-    getDataCols(props.feature || {})
+    getDataCols(props?.feature || {})
       .map((c) => ({
         label: c.replace(" Percent", ""),
-        value: props.feature[c],
+        value: props?.feature?.[c],
       }))
       .sort((a, b) => descending(a.value, b.value))
   )
@@ -15,7 +15,10 @@ const PopupContent = (props) => {
   return (
     <>
       <h3>
-        <Show when={props.boards && !!props?.feature?.board} fallback={<span>Precinct {props?.feature?.id}</span>}>
+        <Show
+          when={props.boards && !!props?.feature?.board}
+          fallback={<span>Precinct {props?.feature?.id}</span>}
+        >
           <span>Counting Board {props.feature.board}</span>
         </Show>
       </h3>
@@ -25,18 +28,18 @@ const PopupContent = (props) => {
             <div class="legend-row-details">
               <span
                 class="color"
-                style={{ "background-color": props.candidateColors[label] }}
+                style={{ "background-color": props.candidateColors?.[label] }}
               />
               <span>{props.displayOverrides[label] || label}</span>
             </div>
             <div class="numbers">
               <div>
-                {props.feature[
+                {props?.feature?.[
                   label === "turnout" ? "total" : label
                 ].toLocaleString()}
               </div>
               <div class="percent">
-                {value.toFixed(1).replace("100.0", "100")}%
+                {value?.toFixed(1).replace("100.0", "100")}%
               </div>
             </div>
           </div>

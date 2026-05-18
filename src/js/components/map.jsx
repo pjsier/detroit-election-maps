@@ -20,10 +20,13 @@ const filterExpression = (data) => [
 ]
 
 const aggregateElection = (data, election, race, boards) => {
-  const dataCols = Object.keys(data[0] || {}).filter(
-    (row) =>
-      row.includes("Percent")
+  let dataCols = Object.keys(data[0] || {}).filter((row) =>
+    row.includes("Percent")
   )
+  // Default to turnout if no candidates found
+  if (dataCols.length === 0) {
+    dataCols = ["turnout"]
+  }
   const candidateNames = dataCols.map((c) => c.replace(" Percent", ""))
 
   const aggBase = {
@@ -209,7 +212,7 @@ const Map = (props) => {
       props.dataDomain,
       props.election,
       props.race,
-      props.boards,
+      props.boards
     )
     if (canceled) return
 
@@ -221,6 +224,20 @@ const Map = (props) => {
       featureData.map(({ colorValue }) => colorValue)
     )
 
+    // Hack to store mapping of boards to precinct IDs
+    const boardPrecinctMap = data.reduce((acc, { id, board }) => {
+      if (acc[board]) {
+        acc[board].push(id)
+      } else {
+        acc[board] = [id]
+      }
+      return acc
+    }, {})
+    const precinctBoardMap = data.reduce(
+      (acc, { id, board }) => ({ ...acc, [id]: board }),
+      {}
+    )
+
     const def = createPrecinctLayerDefinition(
       data,
       props.election,
@@ -228,7 +245,7 @@ const Map = (props) => {
       props.year,
       maxColorScale
     )
-    setMapStore({ ...def.legendData })
+    setMapStore({ ...def.legendData, boardPrecinctMap, precinctBoardMap })
     // Close popup on layer change
     setPopup({ click: false, hover: false })
 

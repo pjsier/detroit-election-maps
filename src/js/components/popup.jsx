@@ -1,26 +1,43 @@
 import { onMount, onCleanup, createEffect } from "solid-js"
 import { usePopup } from "../providers/popup"
+import { useMapStore } from "../providers/map"
 import maplibregl from "maplibre-gl"
 
 // TODO: not sure if the balance of providers and props is right here
 const Popup = (props) => {
   const [popup, setPopup] = usePopup()
+  const [mapStore] = useMapStore()
   let hoverId = null
+  let boardId = null
   let popupObj = null
 
   const updateHoverState = (features) => {
-    if (hoverId)
-      props.map.removeFeatureState(
-        { source: props.source, sourceLayer: "precincts", id: hoverId },
-        "hover"
-      )
-
-    hoverId = features.length > 0 ? features[0].id : null
     if (hoverId) {
-      props.map.setFeatureState(
-        { source: props.source, sourceLayer: "precincts", id: hoverId },
-        { hover: true }
-      )
+      const hoverIds = boardId ? mapStore.boardPrecinctMap[boardId] : [hoverId]
+      hoverIds.forEach((hoverIdIter) => {
+        props.map.removeFeatureState(
+          { source: props.source, sourceLayer: "precincts", id: hoverIdIter },
+          "hover"
+        )
+      })
+    }
+
+    if (features.length > 0) {
+      hoverId = features[0].id
+      boardId = mapStore.precinctBoardMap[hoverId]
+    } else {
+      hoverId = null
+      boardId = null
+    }
+
+    if (hoverId) {
+      const hoverIds = boardId ? mapStore.boardPrecinctMap[boardId] : [hoverId]
+      hoverIds.forEach((hoverIdIter) => {
+        props.map.setFeatureState(
+          { source: props.source, sourceLayer: "precincts", id: hoverIdIter },
+          { hover: true }
+        )
+      })
     }
   }
 

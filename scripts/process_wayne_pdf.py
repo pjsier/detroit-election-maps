@@ -222,6 +222,18 @@ if __name__ == "__main__":
     if year == "2025":
         df_map = specific_race_overrides(df_map)
 
+    # Pull the first-added race into a subset for turnout
+    df_map["turnout"] = df_map[list(df_map.keys())[0]][
+        [
+            "Precinct",
+            "Vote Type",
+            "Voters Cast",
+            "Registered Voters",
+            "Turnout (%)",
+            "Total Votes",
+        ]
+    ]
+
     for race_key, df_val in df_map.items():
         df_val = df_val.loc[:, ~df_val.columns.duplicated()]
         assert_totals_match(race_key, df_val)

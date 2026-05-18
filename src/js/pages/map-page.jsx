@@ -119,8 +119,26 @@ const MapPage = (props) => {
               </div>
             </Show>
             <div class="radio">
-              <label><input type="radio" name="boards" id="boards-all-votes" checked={state.boards} onClick={() => setState({ boards: true })}/>All votes</label>
-              <label><input type="radio" name="boards" id="boards-election-day" checked={!state.boards} onClick={() => setState({ boards: false })} />Election day</label>
+              <label>
+                <input
+                  type="radio"
+                  name="boards"
+                  id="boards-all-votes"
+                  checked={state.boards}
+                  onClick={() => setState({ boards: true })}
+                />
+                All votes
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="boards"
+                  id="boards-election-day"
+                  checked={!state.boards}
+                  onClick={() => setState({ boards: false })}
+                />
+                Election day
+              </label>
             </div>
             <div class="select">
               <select
@@ -139,9 +157,6 @@ const MapPage = (props) => {
             totalVotes={mapStore.electionResults.total}
             displayOverrides={props.displayOverrides}
           />
-          <p class="text-bold">
-            Does not include early or absentee voting totals
-          </p>
           <Show when={props.embedAttribution}>
             <a
               class="embed-attribution"
@@ -161,6 +176,7 @@ const MapPage = (props) => {
           source={`precincts-${getPrecinctYear(state.election, +year())}`}
           active={popup.click || popup.hover}
           lngLat={popup.lngLat}
+          boards={state.boards}
         >
           <PopupContent
             displayOverrides={props.displayOverrides}

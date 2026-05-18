@@ -9,6 +9,8 @@ function MapProvider(props) {
   const store = createStore({
     map: null,
     candidates: [],
+    precinctBoardMap: {},
+    boardPrecinctMap: {},
   })
 
   return (
