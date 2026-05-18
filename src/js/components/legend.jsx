@@ -18,12 +18,14 @@ const Legend = (props) => (
           </div>
           <div class="numbers">
             <div class="hidden">{votes.toLocaleString()}</div>
-            <div class="percent">
-              {((votes / props.totalVotes) * 100)
-                .toFixed(1)
-                .replace("100.0", "100")}
-              %
-            </div>
+            <Show when={!isNaN(votes / props.totalVotes)}>
+              <div class="percent">
+                {((votes / props.totalVotes) * 100)
+                  .toFixed(1)
+                  .replace("100.0", "100")}
+                %
+              </div>
+            </Show>
           </div>
         </div>
       )}

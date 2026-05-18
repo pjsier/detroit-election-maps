@@ -31,7 +31,8 @@ const Popup = (props) => {
     }
 
     if (hoverId) {
-      const hoverIds = (boardId && props.boards) ? mapStore.boardPrecinctMap[boardId] : [hoverId]
+      const hoverIds =
+        boardId && props.boards ? mapStore.boardPrecinctMap[boardId] : [hoverId]
       hoverIds.forEach((hoverIdIter) => {
         props.map.setFeatureState(
           { source: props.source, sourceLayer: "precincts", id: hoverIdIter },
