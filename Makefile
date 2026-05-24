@@ -51,6 +51,9 @@ data/precincts/%.mbtiles: data/precincts/%.geojson
 	--force \
 	-L precincts:$< -o $@
 
+data/results/2024/general.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/2024-november-5/partisan_offices.pdf
+
 data/results/2025/general.pdf:
 	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/detpcts11425off.pdf
 

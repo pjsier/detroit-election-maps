@@ -41,6 +41,7 @@ const aggregateElection = (data, election, race, boards) => {
       Object.keys(aggBase).forEach((key) => {
         electionResults[key] += row[key]
       })
+      countingBoards.push(row.board)
     })
   } else {
     electionResults = data.reduce(
@@ -77,6 +78,7 @@ const createPrecinctLayerDefinition = (
   election,
   race,
   year,
+  boards,
   maxColorScale
 ) => ({
   layerDefinition: {
@@ -119,7 +121,7 @@ const createPrecinctLayerDefinition = (
       ],
     },
   },
-  legendData: aggregateElection(data, election, race),
+  legendData: aggregateElection(data, election, race, boards),
 })
 
 function processFeatureData(dataCols, feature) {
@@ -243,6 +245,7 @@ const Map = (props) => {
       props.election,
       props.race,
       props.year,
+      props.boards,
       maxColorScale
     )
     setMapStore({ ...def.legendData, boardPrecinctMap, precinctBoardMap })

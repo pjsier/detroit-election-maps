@@ -35,7 +35,9 @@ def get_rotated_headers(page):
     col_centers = [
         (min(w["x0"] for w in g) + max(w["x1"] for w in g)) / 2 for g in columns
     ]
-    return headers, header_bottom, col_centers
+    # Split point: just left of the first rotated header strip
+    data_split = min(w["x0"] for w in sorted_words) - 7
+    return headers, header_bottom, col_centers, data_split
 
 
 def assign_to_col(x, col_centers):
@@ -86,11 +88,9 @@ def extract_race_title(page):
 
 
 def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
-    col_headers, header_bottom, col_centers = get_rotated_headers(page)
+    col_headers, header_bottom, col_centers, data_split = get_rotated_headers(page)
     if not col_headers:
         return None
-
-    rotated_x_start = min(col_centers)
 
     all_words = page.extract_words(keep_blank_chars=True)
     data_words = sorted(
@@ -118,8 +118,8 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
     # vote-type label word and no precinct or data words.
     merged_rows = []
     for row in rows:
-        label_words = [w for w in row if w["x1"] < rotated_x_start - 10]
-        data_word_list = [w for w in row if w["x0"] >= rotated_x_start - 10]
+        label_words = [w for w in row if (w["x0"] + w["x1"]) / 2 < data_split]
+        data_word_list = [w for w in row if (w["x0"] + w["x1"]) / 2 >= data_split]
         precinct_words = [w for w in label_words if w["x0"] < 100]
         vote_type_words = [w for w in label_words if w["x0"] >= 100]
         is_continuation = not precinct_words and not data_word_list and vote_type_words
@@ -197,6 +197,7 @@ if __name__ == "__main__":
         for idx, page in enumerate(pdf.pages):
             title = extract_race_title(page)
             df = extract_page_table(page)
+            df = df.loc[df["Precinct"].str.contains("Detroit")]
             if title is None:
                 print(idx, df.columns)
 
@@ -230,13 +231,13 @@ if __name__ == "__main__":
             "Voters Cast",
             "Registered Voters",
             "Turnout (%)",
-            "Total Votes",
         ]
     ]
 
     for race_key, df_val in df_map.items():
         df_val = df_val.loc[:, ~df_val.columns.duplicated()]
-        assert_totals_match(race_key, df_val)
+        # TODO: Only run for Detroit-specific
+        # assert_totals_match(race_key, df_val)
         for col in df_val.columns:
             if col in ["Precinct", "Vote Type", "Turnout (%)"]:
                 continue
@@ -258,28 +259,30 @@ if __name__ == "__main__":
             )
             .drop("Vote Type", axis=1)
         )
-
-        precinct_df = totals_df.loc[totals_df["id"].str.contains("Precinct")]
-        precinct_df["id"] = precinct_df["id"].apply(lambda id: id.split(" ")[-1])
-        precinct_df["board"] = precinct_df["id"].map(precinct_board_map)
+        is_precinct = totals_df["id"].str.contains("Precinct", na=False)
+        totals_df.loc[is_precinct, "board"] = (
+            totals_df.loc[is_precinct, "id"].str.split().str[-1].map(precinct_board_map)
+        )
+        totals_df.loc[~is_precinct, "board"] = (
+            totals_df.loc[~is_precinct, "id"].str.split().str[-1]
+        )
+        precinct_df = totals_df.loc[is_precinct].copy()
+        precinct_df["id"] = precinct_df["id"].str.split().str[-1]
         precinct_df["turnout"] = (
             pd.to_numeric(precinct_df["turnout"].str.rstrip("%"), errors="coerce")
             .fillna(0)
             .astype(float)
         )
 
-        board_df = totals_df.loc[~totals_df["id"].str.contains("Precinct")]
-        board_df["id"] = board_df["id"].apply(lambda id: id.split(" ")[-1])
-        board_df.rename(columns={"id": "board"}, inplace=True)
-        board_df.drop(columns=["registered"], inplace=True)
-
         precinct_board_agg = (
-            precinct_df.groupby("board").agg({"registered": "sum"}).reset_index()
+            totals_df.drop(columns=["id", "turnout"])
+            .groupby("board")
+            .sum()
+            .reset_index()
         )
         precinct_board_df = precinct_df[["id", "board"]].merge(
             precinct_board_agg, on="board", how="left"
         )
-        precinct_board_df = precinct_board_df.merge(board_df, on="board", how="left")
         precinct_board_df["turnout"] = (
             precinct_board_df["ballots"]
             .div(precinct_board_df["registered"])

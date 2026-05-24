@@ -1,4 +1,14 @@
 const elections = {
+  // "2024-general": {
+  //   year: 2024,
+  //   label: "2024 General",
+  //   date: "11/5/2024",
+  //   races: {
+  //     turnout: "Turnout",
+  //     "electors-of-president-and-vice-president-of-the-united-states":
+  //       "President",
+  //   },
+  // },
   "2025-primary": {
     year: 2025,
     label: "2025 Primary",
