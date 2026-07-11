@@ -28,6 +28,7 @@ build-output:
 	cp -r data/output/* deploy-output
 	find deploy-output -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
 
+# TODO: set ID from state precincts
 data/output/2024/primary/: data/results/2024/primary-state.pdf data/results/2024/primary-senate.pdf data/results/2024/primary-congress.pdf
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/primary-state.pdf $@
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/primary-senate.pdf $@
@@ -75,9 +76,16 @@ data/results/2025/general.pdf:
 data/results/2025/primary.pdf:
 	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/new-folder/detaug25pbpo.pdf
 
+data/precincts/mi-precincts-2024.geojson:
+	wget -qO - 'https://hub.arcgis.com/api/v3/datasets/02d40893317d46569017beeb14f9c63e_9/downloads/data?format=geojson&spatialRefId=4326&where=1=1' | \
+	npx mapshaper -i - filetype=geojson \
+	-rename-fields id=NAME \
+	-filter '["163", "125", "099"].includes(COUNTYFIPS)' \
+	-o $@
+
 data/precincts/precincts-2024.geojson:
 	wget -qO - https://detroitdata.org/dataset/fb070cae-30b2-414e-a56a-7624e8a065e1/resource/cdff6247-8148-4ffb-8857-7ea31e80bbbd/download/cleaned_detroit_precincts_2025.geojson | \
-	mapshaper -i - filetype=geojson \
+	npx mapshaper -i - filetype=geojson \
 	-rename-fields id=PRECINCT \
 	-filter-fields id \
 	-each 'id = +id.toString()' \
