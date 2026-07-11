@@ -14,6 +14,9 @@ import mapStyle from "../mapStyle"
 const EMBED_MOBILE_CUTOFF = 500
 const MOBILE_CUTOFF = 800
 
+// Years where counting boards are included, short term
+const BOARD_YEARS = [2025]
+
 const MapPage = (props) => {
   const [state, setState] = createStore({
     election: props.initialElection,
@@ -118,28 +121,30 @@ const MapPage = (props) => {
                 </select>
               </div>
             </Show>
-            <div class="radio">
-              <label>
-                <input
-                  type="radio"
-                  name="boards"
-                  id="boards-all-votes"
-                  checked={state.boards}
-                  onClick={() => setState({ boards: true })}
-                />
-                All votes
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  name="boards"
-                  id="boards-election-day"
-                  checked={!state.boards}
-                  onClick={() => setState({ boards: false })}
-                />
-                Election day
-              </label>
-            </div>
+            <Show when={BOARD_YEARS.includes(+year())}>
+              <div class="radio">
+                <label>
+                  <input
+                    type="radio"
+                    name="boards"
+                    id="boards-all-votes"
+                    checked={state.boards}
+                    onClick={() => setState({ boards: true })}
+                  />
+                  All votes
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="boards"
+                    id="boards-election-day"
+                    checked={!state.boards}
+                    onClick={() => setState({ boards: false })}
+                  />
+                  Election day
+                </label>
+              </div>
+            </Show>
             <div class="select">
               <select
                 aria-label="Race"
@@ -176,7 +181,7 @@ const MapPage = (props) => {
           source={`precincts-${getPrecinctYear(state.election, +year())}`}
           active={popup.click || popup.hover}
           lngLat={popup.lngLat}
-          boards={state.boards}
+          boards={state.boards && BOARD_YEARS.includes(+year())}
         >
           <PopupContent
             displayOverrides={props.displayOverrides}

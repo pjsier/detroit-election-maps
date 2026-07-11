@@ -22,16 +22,20 @@ export function fetchCsvData(dataDomain, election, race, boards) {
               "total",
               "over_votes",
               "under_votes",
-            ].includes(k)
+            ].includes(k) && !k.includes(" Percent")
         )
         row.total = candidates.reduce((acc, curr) => acc + +row[curr], 0)
         if (+row.ballots >= 0) {
           row.total = row.ballots
         }
         candidates.forEach((candidate) => {
-          row[`${candidate} Percent`] =
-            Math.round((+row[candidate] / row.total || 0) * 100 * 100) / 100
-          // TODO: Check turnout
+
+          if (!row[`${candidate} Percent`]) {
+            console.log("Adding")
+            row[`${candidate} Percent`] =
+              Math.round((+row[candidate] / row.total || 0) * 100 * 100) / 100
+            // TODO: Check turnout
+          }
         })
         return Object.entries(row)
           .map(([key, value]) => ({ [key]: key === `id` ? value : +value }))

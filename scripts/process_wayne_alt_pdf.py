@@ -86,9 +86,10 @@ def extract_race_header(page, top_cutoff=100):
     ]
     if not bold_words:
         return None
-    return " ".join(
+    race_header_str =  " ".join(
         w["text"] for w in sorted(bold_words, key=lambda w: (w["top"], w["x0"]))
     )
+    return re.sub(r"\s+", " ", re.sub(r"\(.*\)", "", race_header_str)).strip()
 
 
 def extract_vertical_headers(page: Page, table) -> list[str]:
@@ -163,13 +164,32 @@ if __name__ == "__main__":
     for race_key, race_results in processed_results.items():
         output_results = []
         for precinct_key, precinct_data in race_results.items():
+            # TODO: Currently filtering out Detroit, later on we can join to state dataset
+            if "Detroit" not in precinct_key[0]:
+                continue
+            # TODO: Can split out in future
+            if precinct_key[1] != "Total":
+                continue
+            
+            precinct_data["registered"] = int(precinct_data.pop("Registered Voters", ""))
+            precinct_data["ballots"] = int(precinct_data.pop("Times Cast", "0"))
+            precinct_data["over_votes"] = "0"
+            precinct_data["under_votes"] = "0"
+            precinct_data["total"] = precinct_data.pop("Total Votes", "")
+            precinct_data["turnout"] = round((precinct_data["ballots"] / precinct_data["registered"]) * 100, 2),
+            if "Voters Cast" in precinct_data:
+                precinct_data["ballots"] = int(precinct_data.pop("Voters Cast", "0"))
+            if "% Turnout" in precinct_data:
+                precinct_data["turnout"] = precinct_data.pop("% Turnout", "")
             output_results.append(
                 {
-                    "Precinct": precinct_key[0],
-                    "Vote Type": precinct_key[1],
+                    "id": precinct_key[0].split()[-1],
+                    "board": "",
                     **precinct_data,
                 }
             )
+        if len(output_results) == 0:
+            continue
         with open(f"{output_dir}/{slugify(race_key)}.csv", "w") as f:
             writer = csv.DictWriter(f, output_results[0].keys())
             writer.writeheader()

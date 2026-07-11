@@ -28,6 +28,11 @@ build-output:
 	cp -r data/output/* deploy-output
 	find deploy-output -type f -exec gzip -9 {} \; -exec mv {}.gz {} \;
 
+data/output/2024/primary/: data/results/2024/primary-state.pdf data/results/2024/primary-senate.pdf data/results/2024/primary-congress.pdf
+	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/primary-state.pdf $@
+	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/primary-senate.pdf $@
+	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/primary-congress.pdf $@
+
 data/output/%/: data/results/%.pdf
 	poetry run python scripts/process_wayne_pdf.py $< $@
 
@@ -50,6 +55,16 @@ data/precincts/%.mbtiles: data/precincts/%.geojson
 	--use-attribute-for-id=id \
 	--force \
 	-L precincts:$< -o $@
+
+# TODO: Other races
+data/results/2024/primary-state.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/2024-august-6/strepa24_2.pdf
+
+data/results/2024/primary-senate.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/2024-august-6/ussena24_1.pdf
+
+data/results/2024/primary-congress.pdf:
+	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/2024-august-6/conga24_1.pdf
 
 data/results/2024/general.pdf:
 	wget -qO $@ https://www.waynecountymi.gov/files/assets/mainsite/v/1/clerk/documents/elections/election-results/2024-november-5/partisan_offices.pdf

@@ -34,6 +34,7 @@ const aggregateElection = (data, election, race, boards) => {
     ...candidateNames.reduce((a, v) => ({ ...a, [v]: 0 }), {}),
   }
   let electionResults = aggBase
+  // TODO: If board is blank then ignore this?
   if (boards) {
     const countingBoards = []
     data.forEach((row) => {
