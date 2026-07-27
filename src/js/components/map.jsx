@@ -15,8 +15,8 @@ const compactAttribControl = () => {
 
 const filterExpression = (data) => [
   "in",
-  ["get", "id"],
-  ["literal", data.map(({ id }) => id)],
+  ["id"],
+  ["literal", data.map(({ id }) => +id)],
 ]
 
 const aggregateElection = (data, election, race, boards) => {

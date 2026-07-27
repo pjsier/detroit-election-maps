@@ -17,7 +17,12 @@ const PopupContent = (props) => {
       <h3>
         <Show
           when={props.boards && !!props?.feature?.board}
-          fallback={<span>Precinct {props?.feature?.id}</span>}
+          fallback={
+            <span>
+              {props?.feature?.properties?.name ||
+                `Precinct ${props?.feature?.id}`}
+            </span>
+          }
         >
           <span>Counting Board {props.feature.board}</span>
         </Show>
@@ -34,9 +39,9 @@ const PopupContent = (props) => {
             </div>
             <div class="numbers">
               <div>
-                {props?.feature?.[
-                  label === "turnout" ? "total" : label
-                ].toLocaleString()}
+                {(
+                  props?.feature?.[label === "turnout" ? "total" : label] || ""
+                ).toLocaleString()}
               </div>
               <div class="percent">
                 {value?.toFixed(1).replace("100.0", "100")}%

@@ -100,7 +100,7 @@ const MapPage = (props) => {
                     )
                     setState({
                       election,
-                      race: "0",
+                      race: "turnout",
                     })
                     // This is a workaround for the fact that sometimes the
                     // race IDs are the same between two elections, which

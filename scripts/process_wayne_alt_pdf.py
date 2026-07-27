@@ -2,6 +2,7 @@ import csv
 import os
 import re
 import sys
+import json
 
 import pandas as pd
 from collections import defaultdict
@@ -27,7 +28,7 @@ PageLike = Union[Page, "pdfplumber.page.CroppedPage"]
 def slugify(text):
     return re.sub(
         r"\s", "-", re.sub(r"\s+", " ", re.sub(r"[^a-z\d]", " ", text.lower())).strip()
-    )
+    ).replace("-for-", "-")
 
 
 def header_text_for_cell(
@@ -86,7 +87,7 @@ def extract_race_header(page, top_cutoff=100):
     ]
     if not bold_words:
         return None
-    race_header_str =  " ".join(
+    race_header_str = " ".join(
         w["text"] for w in sorted(bold_words, key=lambda w: (w["top"], w["x0"]))
     )
     return re.sub(r"\s+", " ", re.sub(r"\(.*\)", "", race_header_str)).strip()
@@ -160,30 +161,48 @@ if __name__ == "__main__":
     year = [val for val in output_dir.split("/") if val.isdigit()][0]
     os.makedirs(output_dir, exist_ok=True)
 
+    with open(
+        os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r"
+    ) as f:
+        id_map = json.load(f)
+
     processed_results = process_results_input(input_file)
     for race_key, race_results in processed_results.items():
         output_results = []
         for precinct_key, precinct_data in race_results.items():
             # TODO: Currently filtering out Detroit, later on we can join to state dataset
-            if "Detroit" not in precinct_key[0]:
-                continue
+            # if "Detroit" not in precinct_key[0]:
+            #     continue
             # TODO: Can split out in future
             if precinct_key[1] != "Total":
                 continue
-            
-            precinct_data["registered"] = int(precinct_data.pop("Registered Voters", ""))
+
+            precinct_data["registered"] = int(
+                precinct_data.pop("Registered Voters", "")
+            )
             precinct_data["ballots"] = int(precinct_data.pop("Times Cast", "0"))
             precinct_data["over_votes"] = "0"
             precinct_data["under_votes"] = "0"
             precinct_data["total"] = precinct_data.pop("Total Votes", "")
-            precinct_data["turnout"] = round((precinct_data["ballots"] / precinct_data["registered"]) * 100, 2),
+            precinct_data["turnout"] = round(
+                (precinct_data["ballots"] / precinct_data["registered"]) * 100, 2
+            )
             if "Voters Cast" in precinct_data:
                 precinct_data["ballots"] = int(precinct_data.pop("Voters Cast", "0"))
             if "% Turnout" in precinct_data:
                 precinct_data["turnout"] = precinct_data.pop("% Turnout", "")
+            precinct_data_keys = list(precinct_data.keys())
+            for precinct_data_key in precinct_data_keys:
+                if " Percent" in precinct_data_key:
+                    precinct_data.pop(precinct_data_key, None)
+                elif "(" in precinct_data_key:
+                    clean_key = re.sub(r"\s\(.*\)", "", precinct_data_key)
+                    precinct_data[clean_key] = precinct_data.pop(precinct_data_key)
+
             output_results.append(
                 {
-                    "id": precinct_key[0].split()[-1],
+                    "id": id_map[precinct_key[0]],
+                    "name": precinct_key[0],
                     "board": "",
                     **precinct_data,
                 }

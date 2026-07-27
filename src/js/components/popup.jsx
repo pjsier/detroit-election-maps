@@ -44,11 +44,14 @@ const Popup = (props) => {
 
   const getFeatureData = (features) =>
     features.length > 0
-      ? props.map.getFeatureState({
-          source: props.source,
-          sourceLayer: "precincts",
-          id: features[0].id,
-        })
+      ? {
+          ...features[0],
+          ...props.map.getFeatureState({
+            source: props.source,
+            sourceLayer: "precincts",
+            id: features[0].id,
+          }),
+        }
       : null
 
   onMount(() => {

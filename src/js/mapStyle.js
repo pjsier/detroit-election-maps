@@ -1,4 +1,5 @@
-const PRECINCT_YEARS = [2024]
+const PRECINCT_YEARS = [2024, 2025, 2026]
+const DEFAULT_PRECINCT_YEAR = 2024
 const DATA_DOMAIN = "data.detroitelectionmaps.org"
 
 const precinctSources = PRECINCT_YEARS.reduce(
@@ -7,10 +8,10 @@ const precinctSources = PRECINCT_YEARS.reduce(
     [`precincts-${year}`]: {
       type: "vector",
       maxzoom: 12,
-      bounds: [-83.287959, 42.255192, -82.910439, 42.450239],
+      // TODO: Update these
+      // bounds: [-83.287959, 42.255192, -82.910439, 42.450239],
       tiles: [`https://${DATA_DOMAIN}/tiles/precincts-${year}/{z}/{x}/{y}.pbf`],
       attribution: "City of Detroit",
-      promoteId: "id",
     },
   }),
   {}
@@ -896,7 +897,7 @@ const mapStyle = {
     {
       id: "precincts",
       type: "fill",
-      source: `precincts-${PRECINCT_YEARS.slice(-1)[0]}`,
+      source: `precincts-${DEFAULT_PRECINCT_YEAR}`,
       "source-layer": "precincts",
       paint: {
         "fill-outline-color": [

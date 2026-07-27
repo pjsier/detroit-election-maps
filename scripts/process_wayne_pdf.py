@@ -184,6 +184,9 @@ if __name__ == "__main__":
 
     os.makedirs(output_dir, exist_ok=True)
 
+    # with open(os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r") as f:
+    #     id_map = json.load(f)
+
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
 
@@ -267,6 +270,8 @@ if __name__ == "__main__":
             totals_df.loc[~is_precinct, "id"].str.split().str[-1]
         )
         precinct_df = totals_df.loc[is_precinct].copy()
+        # TODO:
+        # precinct_df["id"] = precinct_df["id"].map(id_map)
         precinct_df["id"] = precinct_df["id"].str.split().str[-1]
         precinct_df["turnout"] = (
             pd.to_numeric(precinct_df["turnout"].str.rstrip("%"), errors="coerce")

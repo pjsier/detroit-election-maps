@@ -1,12 +1,14 @@
 import { csvParse } from "d3-dsv"
 
+const BOARD_YEARS = [2025]
+
 export const getPrecinctYear = (election, year) => {
-  return 2024
+  return +year === 2025 ? 2025 : 2024
 }
 
 export function fetchCsvData(dataDomain, election, race, boards) {
   const [year, name] = election.split("-")
-  const racePath = boards ? `${race}-cb` : race
+  const racePath = boards && BOARD_YEARS.includes(+year) ? `${race}-cb` : race
   return fetch(`https://${dataDomain}/results/${year}/${name}/${racePath}.csv`)
     .then((data) => data.text())
     .then((data) =>
@@ -15,6 +17,7 @@ export function fetchCsvData(dataDomain, election, race, boards) {
           (k) =>
             ![
               "id",
+              "name",
               "board",
               "turnout",
               "registered",
@@ -25,16 +28,16 @@ export function fetchCsvData(dataDomain, election, race, boards) {
             ].includes(k) && !k.includes(" Percent")
         )
         row.total = candidates.reduce((acc, curr) => acc + +row[curr], 0)
-        if (+row.ballots >= 0) {
+        if (row.ballots !== "") {
           row.total = row.ballots
         }
         candidates.forEach((candidate) => {
-
-          if (!row[`${candidate} Percent`]) {
-            console.log("Adding")
+          if (
+            !row[`${candidate} Percent`] ||
+            row[`${candidate} Percent`] === Infinity
+          ) {
             row[`${candidate} Percent`] =
               Math.round((+row[candidate] / row.total || 0) * 100 * 100) / 100
-            // TODO: Check turnout
           }
         })
         return Object.entries(row)
