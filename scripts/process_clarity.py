@@ -16,17 +16,30 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def slugify(text):
-    return re.sub(
+    slug_text = re.sub(
         r"\s", "-", re.sub(r"\s+", " ", re.sub(r"[^a-z\d]", " ", text.lower())).strip()
     ).replace("-for-", "-")
+    if slug_text.startswith("dem-"):
+        return f"{slug_text[4:]}-dem"
+    if slug_text.startswith("rep-"):
+        return f"{slug_text[4:]}-rep"
+    return slug_text
+
+
+def clean_name(precinct_name):
+    return precinct_name.replace(" Twp, ", " Township, ").replace(" Pct ", " Precinct ").replace("Grosse Pointe Shores, ", "Village of Grosse Pointe Shores, A Michigan City, ").replace("Richmond City, ", "Richmond, ").replace("Shelby Township, ", "Shelby Charter Township, ")
 
 
 def parse_voter_turnout(tree, id_map):
     results = []
     for precinct in tree.xpath(".//VoterTurnout/Precincts/Precinct"):
+        precinct_name = clean_name(precinct.attrib["name"])
+        if precinct_name not in id_map:
+            print(precinct_name)
+            continue
         results.append({
-            "id": id_map[precinct.attrib["name"]],
-            "name": precinct.attrib["name"],
+            "id": id_map[precinct_name],
+            "name": precinct_name,
             "ballots": precinct.attrib["ballotsCast"],
             "registered": precinct.attrib["totalVoters"],
             "turnout": precinct.attrib["voterTurnout"],
@@ -39,7 +52,8 @@ def process_contest(contest, id_map):
     for choice in contest.xpath("./Choice"):
         for vote_type in choice.xpath("./VoteType"):
             for precinct in vote_type.xpath("./Precinct"):
-                precinct_map[precinct.attrib["name"]][choice.attrib["text"]] += int(
+                precinct_name = clean_name(precinct.attrib["name"])
+                precinct_map[precinct_name][choice.attrib["text"]] += int(
                     precinct.attrib["votes"]
                 )
                 # TODO: How is total calculated?
@@ -55,6 +69,9 @@ def process_contest(contest, id_map):
         for results_key in results_keys:
             if "rite-in" in results_key:
                 write_ins += results.pop(results_key)
+        if precinct not in id_map:
+            print(precinct)
+            continue
         precinct_rows.append(
             {
                 "id": id_map[precinct],

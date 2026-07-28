@@ -29,11 +29,14 @@ deploy-tiles:
 data/output/2025/general/turnout.csv: data/output/2025/general/wayne/
 	poetry run python scripts/combine_county_races.py data/output/2025/general
 
-data/output/2024/primary/turnout.csv: data/output/2024/primary/wayne/ data/output/2024/primary/oakland/
+data/output/2024/primary/turnout.csv: data/output/2024/primary/wayne/ data/output/2024/primary/oakland/ data/output/2024/primary/macomb/
 	poetry run python scripts/combine_county_races.py data/output/2024/primary
 
+data/output/2024/primary/macomb/: data/results/2024/macomb/primary.xml data/precincts/map-2024.json data/precincts/precincts-2024.geojson
+	poetry run python scripts/process_clarity.py $< $@
+
 data/output/2024/primary/oakland/: data/results/2024/oakland/primary.xml data/precincts/map-2024.json data/precincts/precincts-2024.geojson
-	poetry run python scripts/process_oakland.py $< $@
+	poetry run python scripts/process_clarity.py $< $@
 
 data/output/2025/general/wayne/: data/results/2025/wayne/general.pdf
 	poetry run python scripts/process_wayne_pdf.py $< $@

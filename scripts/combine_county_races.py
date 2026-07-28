@@ -26,7 +26,12 @@ if __name__ == "__main__":
                 # TODO: Have to streamline candidate names
                 output_rows.extend([r for r in csv.DictReader(f)])
 
+        fieldnames = list(output_rows[0].keys())
+        for key in list(output_rows[-1].keys()) + ["board", "total", "under_votes", "over_votes", "registered", "turnout", "ballots"]:
+            if key not in fieldnames:
+                fieldnames.append(key)
+        
         with Path.open(results_dir / f"{race}.csv", "w") as f:
-            writer = csv.DictWriter(f, fieldnames=list(output_rows[0].keys()))
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(output_rows)

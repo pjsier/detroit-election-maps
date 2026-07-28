@@ -6,7 +6,7 @@ if __name__ == "__main__":
     precincts = json.load(sys.stdin)
     output_map = {}
     for precinct in precincts["features"]:
-        name = precinct["properties"]["name"]
+        name = precinct["properties"]["name"].replace("3Macomb", "Macomb")
         precinct_id = precinct["properties"]["id"]
         output_map[name] = precinct_id
         if "Township of" in name:
