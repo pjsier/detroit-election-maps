@@ -21,10 +21,16 @@ def slugify(text):
     ).replace("-for-", "-")
 
 
-def parse_voter_turnout(tree):
+def parse_voter_turnout(tree, id_map):
     results = []
     for precinct in tree.xpath(".//VoterTurnout/Precincts/Precinct"):
-        results.append(precinct.attrib)
+        results.append({
+            "id": id_map[precinct.attrib["name"]],
+            "name": precinct.attrib["name"],
+            "ballots": precinct.attrib["ballotsCast"],
+            "registered": precinct.attrib["totalVoters"],
+            "turnout": precinct.attrib["voterTurnout"],
+        })
     return results
 
 
@@ -76,6 +82,12 @@ if __name__ == "__main__":
 
     with open(sys.argv[1], "r") as f:
         tree = etree.fromstring(f.read().encode())
+
+    turnout_rows = parse_voter_turnout(tree, id_map)
+    with open(os.path.join(output_dir, "turnout.csv"), "w") as f:
+        writer = csv.DictWriter(f, fieldnames=list(turnout_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(turnout_rows)
 
     for contest in tree.xpath(".//Contest"):
         contest_name, contest_rows = process_contest(contest, id_map)

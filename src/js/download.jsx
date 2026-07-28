@@ -36,7 +36,7 @@ if (downloadContainer) {
       <DownloadPage
         {...mapMetadata}
         initialElection={params.get("election") || DEFAULT_ELECTION}
-        initialRace={params.get("race") || "0"}
+        initialRace={params.get("race") || "turnout"}
       />
     ),
     downloadContainer

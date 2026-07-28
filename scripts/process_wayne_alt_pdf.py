@@ -209,7 +209,10 @@ if __name__ == "__main__":
             )
         if len(output_results) == 0:
             continue
-        with open(f"{output_dir}/{slugify(race_key)}.csv", "w") as f:
+        output_file_key = slugify(race_key)
+        if output_file_key == "registration":
+            output_file_key = "turnout"
+        with open(f"{output_dir}/{output_file_key}.csv", "w") as f:
             writer = csv.DictWriter(f, output_results[0].keys())
             writer.writeheader()
             writer.writerows(output_results)

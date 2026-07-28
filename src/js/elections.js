@@ -4,7 +4,7 @@ const elections = {
     label: "2024 Primary",
     date: "8/6/2024",
     races: {
-      registration: "Turnout",
+      "turnout": "Turnout",
       "representative-in-state-legislature-1st-district-dem":
         "State House, 1st District (DEM)",
       "representative-in-state-legislature-3rd-district-dem":
