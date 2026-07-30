@@ -28,9 +28,6 @@ export function fetchCsvData(dataDomain, election, race, boards) {
             ].includes(k) && !k.includes(" Percent")
         )
         row.total = candidates.reduce((acc, curr) => acc + +row[curr], 0)
-        if (row.ballots !== "") {
-          row.total = row.ballots
-        }
         candidates.forEach((candidate) => {
           if (
             !row[`${candidate} Percent`] ||

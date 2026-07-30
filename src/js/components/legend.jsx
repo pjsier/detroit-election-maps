@@ -21,7 +21,7 @@ const Legend = (props) => {
               <span class="label">{props.displayOverrides[name] || name}</span>
             </div>
             <div class="numbers">
-              <div class="hidden">{votes.toLocaleString()}</div>
+              <div>{votes.toLocaleString()}</div>
               <Show when={!isNaN(votes / raceTotal())}>
                 <div class="percent">
                   {((votes / raceTotal()) * 100)

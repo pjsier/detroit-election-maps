@@ -35,8 +35,8 @@ const getResults = ({ query, azureMapsKey }) =>
   fetch(
     `https://atlas.microsoft.com/search/fuzzy/json?${new URLSearchParams({
       "api-version": 1.0,
-      topLeft: "42.450239,-83.287959",
-      btmRight: "42.255192,-82.910439",
+      topLeft: "43.0635,-84.0765",
+      btmRight: "42.0558,-82.5769",
       countrySet: "US",
       idxSet: ["Addr", "PAD", "Geo"].join(","),
       limit: 5,
