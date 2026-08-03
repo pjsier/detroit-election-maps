@@ -10,7 +10,8 @@
     "start": "NODE_ENV=development eleventy --serve",
     "build": "NODE_ENV=production eleventy",
     "lint": "eslint ./src/js/**/*.{js,jsx}",
-    "style": "prettier --check src/**/**.{js,jsx,css}"
+    "style": "prettier --check src/**/**.{js,jsx,css}",
+    "centers": "geojson-polygon-labels"
   },
   "devDependencies": {
     "@11ty/eleventy": "^3.1.2",
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "d3-dsv": "^3.0.1",
+    "geojson-polygon-labels": "^1.5.0",
     "maplibre-gl": "^5.24.0",
     "solid-js": "^1.9.7"
   },

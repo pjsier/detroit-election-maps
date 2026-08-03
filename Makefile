@@ -55,6 +55,9 @@ tiles/%/: data/precincts/%.mbtiles
 	tile-join --no-tile-size-limit --force -e $@ $<
 
 .PRECIOUS:
+data/precincts/%-centers.mbtiles: data/precincts/%-centers.geojson
+
+.PRECIOUS:
 data/precincts/%.mbtiles: data/precincts/%.geojson
 	tippecanoe \
 	--simplification=10 \
@@ -90,6 +93,9 @@ data/results/2025/wayne/primary.pdf:
 
 data/precincts/map-%.json: data/precincts/precincts-%.geojson
 	cat $< | poetry run python scripts/process_precinct_map.py > $@
+
+data/precincts/precincts-2024-centers.geojson: data/precincts/precincts-2024.geojson
+	npx geojson-polygon-labels@v1.5.0 --collections largest $< > $@
 
 # TODO: There doesn't seem to be any overlap in non-zero padded values when converted to integers, but it's possible
 data/precincts/precincts-2026.geojson:
