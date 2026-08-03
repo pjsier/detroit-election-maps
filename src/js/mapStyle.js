@@ -1,5 +1,5 @@
 const PRECINCT_YEARS = [2024, 2025, 2026]
-const DEFAULT_PRECINCT_YEAR = 2024
+const DEFAULT_PRECINCT_YEAR = 2026
 const DATA_DOMAIN = "data.detroitelectionmaps.org"
 
 const precinctSources = PRECINCT_YEARS.reduce(

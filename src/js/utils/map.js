@@ -1,4 +1,4 @@
-export const DEFAULT_ELECTION = "2025-general"
+export const DEFAULT_ELECTION = "2026-primary"
 
 export const COLOR_SCHEME = [
   "#1f77b4",

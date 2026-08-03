@@ -47,7 +47,7 @@ const aggregateElection = (data, election, race, boards) => {
   } else {
     electionResults = data.reduce(
       (agg, val) =>
-        Object.keys(agg).reduce((a, v) => ({ ...a, [v]: agg[v] + val[v] }), {}),
+        Object.keys(agg).reduce((a, v) => ({ ...a, total: agg.total + val[v], [v]: agg[v] + val[v] }), {}),
       aggBase
     )
   }
@@ -68,8 +68,6 @@ const aggregateElection = (data, election, race, boards) => {
   // Workaround for turnout display
   if (electionResults.turnout) {
     electionResults.total = electionResults.registered
-  } else if (isNaN(electionResults.total)) {
-    electionResults.total = electionResults.ballots
   }
   return { candidates, candidateColors, electionResults }
 }

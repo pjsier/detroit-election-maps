@@ -32,10 +32,10 @@ data/output/2025/general/turnout.csv: data/output/2025/general/wayne/
 data/output/2024/primary/turnout.csv: data/output/2024/primary/wayne/ data/output/2024/primary/oakland/ data/output/2024/primary/macomb/
 	poetry run python scripts/combine_county_races.py data/output/2024/primary
 
-data/output/2024/primary/macomb/: data/results/2024/macomb/primary.xml data/precincts/map-2024.json data/precincts/precincts-2024.geojson
+data/output/%/primary/macomb/: data/results/%/macomb/primary.xml data/precincts/map-%.json data/precincts/precincts-%.geojson
 	poetry run python scripts/process_clarity.py $< $@
 
-data/output/2024/primary/oakland/: data/results/2024/oakland/primary.xml data/precincts/map-2024.json data/precincts/precincts-2024.geojson
+data/output/%/primary/oakland/: data/results/%/oakland/primary.xml data/precincts/map-2024.json data/precincts/precincts-%.geojson
 	poetry run python scripts/process_clarity.py $< $@
 
 data/output/2025/general/wayne/: data/results/2025/wayne/general.pdf
@@ -95,9 +95,10 @@ data/precincts/map-%.json: data/precincts/precincts-%.geojson
 data/precincts/precincts-2026.geojson:
 	wget -qO - 'https://hub.arcgis.com/api/v3/datasets/b7df95c78668407280a7dead8e26aad0_0/downloads/data?format=geojson&spatialRefId=4326&where=1=1' | \
 	npx mapshaper -i - filetype=geojson \
-	-rename-fields id=NAME,precinct=PRECINCT,name=Precinct_Long_Name \
-	-filter '["163", "125", "099"].includes(COUNTYFIPS)' \
+	-rename-fields id=PrecinctCode,name=PrecinctLongName \
+	-filter '["163", "125", "099"].includes(CountyFIPS) || (name || "").includes("Fenton")' \
 	-filter-fields id,name \
+	-each 'id = id.replace("A", "1").replace("B", "2").replace("C", "3")' \
 	-each 'id = +id' \
 	-o $@
 
