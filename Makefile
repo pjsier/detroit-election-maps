@@ -1,5 +1,7 @@
 S3_BUCKET = detroit-election-maps
 ACCOUNT_ID = 7718b66fac7dfe0e5badaa986de51a5d
+# https://results.enr.clarityelections.com/MI/OaklandMI/127075/web.345435/#/summary
+# https://results.enr.clarityelections.com/MI/Macomb/126774/web.345435/#/summary
 
 all: tiles/precincts-2024/ tiles/precincts-2025/ tiles/precincts-2026/
 
@@ -25,6 +27,9 @@ deploy-tiles:
 		--content-type application/vnd.mapbox-vector-tile \
     	--content-encoding gzip \
 		--cache-control 'Cache-Control: "public, max-age=86400"'
+
+data/output/2026/primary/turnout.csv: data/output/2026/primary/wayne/ data/output/2026/primary/oakland/ data/output/2026/primary/macomb/
+	poetry run python scripts/combine_county_races.py data/output/2026/primary
 
 data/output/2025/general/turnout.csv: data/output/2025/general/wayne/
 	poetry run python scripts/combine_county_races.py data/output/2025/general

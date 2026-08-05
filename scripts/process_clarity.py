@@ -108,6 +108,8 @@ if __name__ == "__main__":
 
     for contest in tree.xpath(".//Contest"):
         contest_name, contest_rows = process_contest(contest, id_map)
+        if len(contest_rows) == 0:
+            continue
         with open(os.path.join(output_dir, f"{slugify(contest_name)}.csv"), "w") as f:
             writer = csv.DictWriter(f, fieldnames=list(contest_rows[0].keys()))
             writer.writeheader()

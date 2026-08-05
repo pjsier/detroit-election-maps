@@ -3,7 +3,7 @@ import { csvParse } from "d3-dsv"
 const BOARD_YEARS = [2025]
 
 export const getPrecinctYear = (election, year) => {
-  return +year === 2025 ? 2025 : 2024
+  return year
 }
 
 export function fetchCsvData(dataDomain, election, race, boards) {

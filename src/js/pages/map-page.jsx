@@ -162,6 +162,11 @@ const MapPage = (props) => {
             totalVotes={mapStore.electionResults.total}
             displayOverrides={props.displayOverrides}
           />
+          <Show when={+year() === 2026}>
+            <p class="unofficial-notice">
+              Partial, unofficial results as of Aug. 5, 7:05am
+            </p>
+          </Show>
           <Show when={props.embedAttribution}>
             <a
               class="embed-attribution"

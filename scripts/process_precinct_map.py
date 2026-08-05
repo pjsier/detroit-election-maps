@@ -48,6 +48,8 @@ if __name__ == "__main__":
             precinct_num = name.split(", ")[-1]
             output_map[f"Township of Sumpter, {precinct_num}"] = precinct_id
         if "Village of Grosse Pointe Shores":
+            precinct_num = name.split(" ")[-1]
             output_map[f"The {name.replace('A Michigan', 'a Michigan')}"] = precinct_id
+            output_map[f"Grosse Pointe Shores {precinct_num}"] = precinct_id
 
     json.dump(output_map, sys.stdout)
