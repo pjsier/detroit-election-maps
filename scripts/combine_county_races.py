@@ -31,7 +31,11 @@ if __name__ == "__main__":
             if key not in fieldnames:
                 fieldnames.append(key)
         
-        with Path.open(results_dir / f"{race}.csv", "w") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(output_rows)
+        try:
+            with Path.open(results_dir / f"{race}.csv", "w") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(output_rows)
+        except ValueError as e:
+            print(e)
+            continue

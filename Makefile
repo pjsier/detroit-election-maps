@@ -31,6 +31,9 @@ deploy-tiles:
 data/output/2026/primary/turnout.csv: data/output/2026/primary/wayne/ data/output/2026/primary/oakland/ data/output/2026/primary/macomb/
 	poetry run python scripts/combine_county_races.py data/output/2026/primary
 
+data/output/2026/primary/wayne/turnout.csv:
+	poetry run python scripts/process_totalvote_turnout.py data/results/2026/wayne/primary-turnout.json $@
+
 data/output/2025/general/turnout.csv: data/output/2025/general/wayne/
 	poetry run python scripts/combine_county_races.py data/output/2025/general
 

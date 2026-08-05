@@ -2,11 +2,16 @@ import csv
 import os
 import re
 import sys
+import json
 
 import pandas as pd
 import pdfplumber
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def clean_header(header):
+    return re.sub(r"\s+", " ", header.replace("NP -", "").replace("DEM -", "").replace("REP -", "")).strip()
 
 
 def slugify(text):
@@ -84,7 +89,7 @@ def extract_race_title(page):
     if "-voters" in race_title_slug:
         race_title_slug = race_title_slug.split("-voters")[0]
 
-    return race_title_slug
+    return race_title_slug.replace("-state-senate-", "")
 
 
 def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
@@ -149,7 +154,7 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
         records.append([current_precinct, row["vote_type"]] + row_data)
 
     return pd.DataFrame(
-        records, columns=[header.replace("NP -", "").strip() for header in all_headers]
+        records, columns=[clean_header(header) for header in all_headers]
     )
 
 
@@ -184,23 +189,19 @@ if __name__ == "__main__":
 
     os.makedirs(output_dir, exist_ok=True)
 
-    # with open(os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r") as f:
-    #     id_map = json.load(f)
+    with open(os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r") as f:
+        id_map = json.load(f)
 
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
-
-    with open(
-        os.path.join(BASE_DIR, "data", "counting-boards", f"{year}.csv"), "r"
-    ) as f:
-        reader = csv.DictReader(f)
-        precinct_board_map = {r["precinct"]: r["board"] for r in reader}
+    precinct_board_map = {}
 
     with pdfplumber.open(input_file) as pdf:
         for idx, page in enumerate(pdf.pages):
             title = extract_race_title(page)
             df = extract_page_table(page)
-            df = df.loc[df["Precinct"].str.contains("Detroit")]
+            if year == "2025":
+                df = df.loc[df["Precinct"].str.contains("Detroit")]
             if title is None:
                 print(idx, df.columns)
 
@@ -225,6 +226,11 @@ if __name__ == "__main__":
 
     if year == "2025":
         df_map = specific_race_overrides(df_map)
+        with open(
+            os.path.join(BASE_DIR, "data", "counting-boards", f"{year}.csv"), "r"
+        ) as f:
+            reader = csv.DictReader(f)
+            precinct_board_map = {r["precinct"]: r["board"] for r in reader}
 
     # Pull the first-added race into a subset for turnout
     df_map["turnout"] = df_map[list(df_map.keys())[0]][
@@ -251,48 +257,48 @@ if __name__ == "__main__":
             df_val.loc[df_val["Vote Type"] == "Total"]
             .rename(
                 columns={
-                    "Precinct": "id",
+                    "Precinct": "name",
                     "Voters Cast": "ballots",
                     "Registered Voters": "registered",
                     "Turnout (%)": "turnout",
                     "Over Votes": "over_votes",
                     "Under Votes": "under_votes",
                     "Total Votes": "total",
+                    "Write-ins": "Write-in",
+                    "McMorrow Mallory": "Mallory McMorrow",
+                    "Robert Swanson Christopher": "Christopher Robert Swanson",
+                    "McKinney Donavan": "Donavan McKinney",
                 }
             )
             .drop("Vote Type", axis=1)
         )
-        is_precinct = totals_df["id"].str.contains("Precinct", na=False)
-        totals_df.loc[is_precinct, "board"] = (
-            totals_df.loc[is_precinct, "id"].str.split().str[-1].map(precinct_board_map)
-        )
-        totals_df.loc[~is_precinct, "board"] = (
-            totals_df.loc[~is_precinct, "id"].str.split().str[-1]
-        )
-        precinct_df = totals_df.loc[is_precinct].copy()
-        # TODO:
-        # precinct_df["id"] = precinct_df["id"].map(id_map)
-        precinct_df["id"] = precinct_df["id"].str.split().str[-1]
-        precinct_df["turnout"] = (
-            pd.to_numeric(precinct_df["turnout"].str.rstrip("%"), errors="coerce")
-            .fillna(0)
-            .astype(float)
-        )
+        is_precinct = totals_df["name"].str.contains("Precinct", na=False)
+        precinct_df = totals_df.loc[is_precinct].copy().drop(columns=["registered", "turnout"])
+        precinct_df["id"] = precinct_df["name"].map(id_map)
 
-        precinct_board_agg = (
-            totals_df.drop(columns=["id", "turnout"])
-            .groupby("board")
-            .sum()
-            .reset_index()
-        )
-        precinct_board_df = precinct_df[["id", "board"]].merge(
-            precinct_board_agg, on="board", how="left"
-        )
-        precinct_board_df["turnout"] = (
-            precinct_board_df["ballots"]
-            .div(precinct_board_df["registered"])
-            .mul(100)
-            .round(2)
-        )
         precinct_df.to_csv(f"{output_dir}/{race_key}.csv", index=False)
-        precinct_board_df.to_csv(f"{output_dir}/{race_key}-cb.csv", index=False)
+
+        if year == "2025":
+            totals_df.loc[is_precinct, "board"] = (
+                totals_df.loc[is_precinct, "name"].str.split().str[-1].map(precinct_board_map)
+            )
+            totals_df.loc[~is_precinct, "board"] = (
+                totals_df.loc[~is_precinct, "name"].str.split().str[-1]
+            )
+            precinct_board_agg = (
+                totals_df.drop(columns=["name", "turnout"])
+                .groupby("board")
+                .sum()
+                .reset_index()
+            )
+            precinct_board_df = precinct_df[["id", "board"]].merge(
+                precinct_board_agg, on="board", how="left"
+            )
+            precinct_board_df["turnout"] = (
+                precinct_board_df["ballots"]
+                .div(precinct_board_df["registered"])
+                .mul(100)
+                .round(2)
+            )
+            
+            precinct_board_df.to_csv(f"{output_dir}/{race_key}-cb.csv", index=False)

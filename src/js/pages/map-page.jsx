@@ -158,13 +158,14 @@ const MapPage = (props) => {
             </div>
           </form>
           <Legend
+            race={state.race}
             candidates={mapStore.candidates || []}
             totalVotes={mapStore.electionResults.total}
             displayOverrides={props.displayOverrides}
           />
           <Show when={+year() === 2026}>
             <p class="unofficial-notice">
-              Partial, unofficial results as of Aug. 5, 8:08am
+              Partial, unofficial results as of Aug. 5, 5:44pm
             </p>
           </Show>
           <Show when={props.embedAttribution}>
