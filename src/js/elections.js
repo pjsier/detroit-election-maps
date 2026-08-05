@@ -96,11 +96,16 @@ const elections = {
         "State House, 11th District (DEM)",
       "representative-in-state-legislature-12th-district-dem":
         "State House, 12th District (DEM)",
+      "representative-in-state-legislature-14th-district-dem":
+        "State House, 14th District (DEM)",
       "representative-in-state-legislature-16th-district-dem":
         "State House, 16th District (DEM)",
       "representative-in-state-legislature-17th-district-dem":
         "State House, 17th District (DEM)",
+      "state-senator-9th-district-dem": "State Senate, 9th District (DEM)",
       "state-senator-10th-district-dem": "State Senate, 10th District (DEM)",
+      "representative-in-congress-10th-district-dem":
+        "U.S. House, 10th District (DEM)",
       "representative-in-congress-12th-district-dem":
         "U.S. House, 12th District (DEM)",
       "representative-in-congress-13th-district-dem":
