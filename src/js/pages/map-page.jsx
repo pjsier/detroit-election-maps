@@ -164,7 +164,7 @@ const MapPage = (props) => {
           />
           <Show when={+year() === 2026}>
             <p class="unofficial-notice">
-              Partial, unofficial results as of Aug. 5, 7:05am
+              Partial, unofficial results as of Aug. 5, 8:08am
             </p>
           </Show>
           <Show when={props.embedAttribution}>
