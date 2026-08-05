@@ -82,6 +82,8 @@ const elections = {
         "State House, 4th District (DEM)",
       "representative-in-state-legislature-5th-district-dem":
         "State House, 5th District (DEM)",
+      "representative-in-state-legislature-6th-district-dem":
+        "State House, 6th District (DEM)",
       "representative-in-state-legislature-7th-district-dem":
         "State House, 7th District (DEM)",
       "representative-in-state-legislature-8th-district-dem":
