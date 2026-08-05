@@ -106,6 +106,8 @@ const elections = {
       "representative-in-congress-13th-district-dem":
         "U.S. House, 13th District (DEM)",
       "united-states-senator-dem": "U.S. Senator, (DEM)",
+      "governor-dem": "Governor (DEM)",
+      "governor-rep": "Governor (REP)"
     },
   }
 }
