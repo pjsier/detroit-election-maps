@@ -108,6 +108,8 @@ const elections = {
       "state-senator-10th-district-dem": "State Senate, 10th District (DEM)",
       "representative-in-congress-10th-district-dem":
         "U.S. House, 10th District (DEM)",
+      "representative-in-congress-11th-district-dem":
+        "U.S. House, 11th District (DEM)",
       "representative-in-congress-12th-district-dem":
         "U.S. House, 12th District (DEM)",
       "representative-in-congress-13th-district-dem":
