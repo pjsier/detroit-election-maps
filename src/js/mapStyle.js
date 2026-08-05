@@ -8,7 +8,7 @@ const precinctSources = PRECINCT_YEARS.reduce(
     [`precincts-${year}`]: {
       type: "vector",
       maxzoom: 12,
-      bounds: [-84.0765, 42.0558, -82.5769, 43.0635],
+      bounds: [-84.5, 41.5, -83.0, 43.5],
       tiles: [`https://${DATA_DOMAIN}/tiles/precincts-${year}/{z}/{x}/{y}.pbf`],
       attribution: "City of Detroit",
     },
