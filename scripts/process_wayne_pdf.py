@@ -89,7 +89,7 @@ def extract_race_title(page):
     if "-voters" in race_title_slug:
         race_title_slug = race_title_slug.split("-voters")[0]
 
-    return race_title_slug.replace("-state-senate-", "")
+    return race_title_slug.replace("-state-senate", "")
 
 
 def extract_page_table(page, label_cols=("Precinct", "Vote Type")):

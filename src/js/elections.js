@@ -78,6 +78,8 @@ const elections = {
     date: "8/4/2026",
     races: {
       "turnout": "Turnout",
+      "representative-in-state-legislature-2nd-district-dem":
+        "State House, 2nd District (DEM)",
       "representative-in-state-legislature-4th-district-dem":
         "State House, 4th District (DEM)",
       "representative-in-state-legislature-5th-district-dem":
@@ -99,6 +101,7 @@ const elections = {
       "representative-in-state-legislature-14th-district-dem":
         "State House, 14th District (DEM)",
       "state-senator-1st-district-dem": "State Senate, 1st District (DEM)",
+      "state-senator-2nd-district-dem": "State Senate, 2nd District (DEM)",
       "state-senator-3rd-district-dem": "State Senate, 3rd District (DEM)",
       "state-senator-9th-district-dem": "State Senate, 9th District (DEM)",
       "state-senator-10th-district-dem": "State Senate, 10th District (DEM)",
