@@ -127,10 +127,16 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
         data_word_list = [w for w in row if (w["x0"] + w["x1"]) / 2 >= data_split]
         precinct_words = [w for w in label_words if w["x0"] < 100]
         vote_type_words = [w for w in label_words if w["x0"] >= 100]
-        is_continuation = not precinct_words and not data_word_list and vote_type_words
-        if is_continuation and merged_rows:
+        # Handle multiline precinct names
+        is_vote_type_continuation = not precinct_words and not data_word_list and vote_type_words
+        is_precinct_continuation = precinct_words and not data_word_list and not vote_type_words
+        if is_vote_type_continuation and merged_rows:
             merged_rows[-1]["vote_type"] += " " + " ".join(
                 w["text"].strip() for w in vote_type_words
+            )
+        elif is_precinct_continuation and merged_rows:
+            merged_rows[-1]["precinct"] += " " + " ".join(
+                w["text"].strip() for w in precinct_words
             )
         else:
             merged_rows.append(
@@ -190,7 +196,7 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     with open(os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r") as f:
-        id_map = json.load(f)
+        id_map = {k: str(int(v)) for k, v in json.load(f).items()}
 
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
@@ -231,17 +237,6 @@ if __name__ == "__main__":
         ) as f:
             reader = csv.DictReader(f)
             precinct_board_map = {r["precinct"]: r["board"] for r in reader}
-
-    # Pull the first-added race into a subset for turnout
-    df_map["turnout"] = df_map[list(df_map.keys())[0]][
-        [
-            "Precinct",
-            "Vote Type",
-            "Voters Cast",
-            "Registered Voters",
-            "Turnout (%)",
-        ]
-    ]
 
     for race_key, df_val in df_map.items():
         df_val = df_val.loc[:, ~df_val.columns.duplicated()]

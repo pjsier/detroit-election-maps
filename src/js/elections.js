@@ -105,6 +105,8 @@ const elections = {
       "state-senator-3rd-district-dem": "State Senate, 3rd District (DEM)",
       "state-senator-9th-district-dem": "State Senate, 9th District (DEM)",
       "state-senator-10th-district-dem": "State Senate, 10th District (DEM)",
+      "csd-proposal-s-operating-millage-replacement": "Detroit Proposal S - Operating Millage Replacement",
+      "wayne-county-public-transportation-millage-transit": "Wayne County Public Transportation Millage",
       "representative-in-congress-10th-district-dem":
         "U.S. House, 10th District (DEM)",
       "representative-in-congress-11th-district-dem":
