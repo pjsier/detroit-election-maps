@@ -16,6 +16,7 @@ export const COLOR_SCHEME = [
 // TODO: Maybe add election and/or race key into this to be safe? Could be many "Johnson"s
 const COLOR_OVERRIDES = {
   turnout: "#279989",
+  "Mohammad Alam": "#2ca02c"
 }
 
 export const getColor = (candidate, index) =>

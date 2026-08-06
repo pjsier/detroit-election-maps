@@ -26,24 +26,39 @@ def slugify(text):
     return slug_text
 
 
-def clean_name(precinct_name):
-    return precinct_name.replace(" Twp, ", " Township, ").replace(" Pct ", " Precinct ").replace("Grosse Pointe Shores, ", "Village of Grosse Pointe Shores, A Michigan City, ").replace("Richmond City, ", "Richmond, ").replace("Shelby Township, ", "Shelby Charter Township, ")
+def clean_precinct_name(precinct_name):
+    return (
+        precinct_name.replace(" Twp, ", " Township, ")
+        .replace(" Pct ", " Precinct ")
+        .replace(
+            "Grosse Pointe Shores, ",
+            "Village of Grosse Pointe Shores, A Michigan City, ",
+        )
+        .replace("Richmond City, ", "Richmond, ")
+        .replace("Shelby Township, ", "Shelby Charter Township, ")
+    )
+
+
+def clean_candidate_name(candidate_name):
+    return candidate_name.replace(",", "")
 
 
 def parse_voter_turnout(tree, id_map):
     results = []
     for precinct in tree.xpath(".//VoterTurnout/Precincts/Precinct"):
-        precinct_name = clean_name(precinct.attrib["name"])
+        precinct_name = clean_precinct_name(precinct.attrib["name"])
         if precinct_name not in id_map:
             print(precinct_name)
             continue
-        results.append({
-            "id": id_map[precinct_name],
-            "name": precinct_name,
-            "ballots": precinct.attrib["ballotsCast"],
-            "registered": precinct.attrib["totalVoters"],
-            "turnout": precinct.attrib["voterTurnout"],
-        })
+        results.append(
+            {
+                "id": id_map[precinct_name],
+                "name": precinct_name,
+                "ballots": precinct.attrib["ballotsCast"],
+                "registered": precinct.attrib["totalVoters"],
+                "turnout": precinct.attrib["voterTurnout"],
+            }
+        )
     return results
 
 
@@ -52,10 +67,10 @@ def process_contest(contest, id_map):
     for choice in contest.xpath("./Choice"):
         for vote_type in choice.xpath("./VoteType"):
             for precinct in vote_type.xpath("./Precinct"):
-                precinct_name = clean_name(precinct.attrib["name"])
-                precinct_map[precinct_name][choice.attrib["text"]] += int(
-                    precinct.attrib["votes"]
-                )
+                precinct_name = clean_precinct_name(precinct.attrib["name"])
+                precinct_map[precinct_name][
+                    clean_candidate_name(choice.attrib["text"])
+                ] += int(precinct.attrib["votes"])
                 # TODO: How is total calculated?
                 # TODO: Are under and overvotes counted?
 

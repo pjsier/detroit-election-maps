@@ -3,6 +3,7 @@ import os
 import re
 import sys
 import json
+from collections import defaultdict
 
 import pandas as pd
 import pdfplumber
@@ -11,7 +12,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def clean_header(header):
-    return re.sub(r"\s+", " ", header.replace("NP -", "").replace("DEM -", "").replace("REP -", "")).strip()
+    return re.sub(
+        r"\s+",
+        " ",
+        header.replace("NP -", "").replace("DEM -", "").replace("REP -", ""),
+    ).strip()
 
 
 def slugify(text):
@@ -128,8 +133,12 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
         precinct_words = [w for w in label_words if w["x0"] < 100]
         vote_type_words = [w for w in label_words if w["x0"] >= 100]
         # Handle multiline precinct names
-        is_vote_type_continuation = not precinct_words and not data_word_list and vote_type_words
-        is_precinct_continuation = precinct_words and not data_word_list and not vote_type_words
+        is_vote_type_continuation = (
+            not precinct_words and not data_word_list and vote_type_words
+        )
+        is_precinct_continuation = (
+            precinct_words and not data_word_list and not vote_type_words
+        )
         if is_vote_type_continuation and merged_rows:
             merged_rows[-1]["vote_type"] += " " + " ".join(
                 w["text"].strip() for w in vote_type_words
@@ -195,12 +204,18 @@ if __name__ == "__main__":
 
     os.makedirs(output_dir, exist_ok=True)
 
-    with open(os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r") as f:
+    with open(
+        os.path.join(BASE_DIR, "data", "precincts", f"map-{year}.json"), "r"
+    ) as f:
         id_map = {k: str(int(v)) for k, v in json.load(f).items()}
 
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
     precinct_board_map = {}
+
+    # Group races into batches to handle splitting across multiple pages
+    label_cols = {"Precinct", "Vote Type"}
+    batch_frames: dict[str, dict[frozenset, pd.DataFrame]] = defaultdict(dict)
 
     with pdfplumber.open(input_file) as pdf:
         for idx, page in enumerate(pdf.pages):
@@ -210,25 +225,27 @@ if __name__ == "__main__":
                 df = df.loc[df["Precinct"].str.contains("Detroit")]
             if title is None:
                 print(idx, df.columns)
+                continue
 
-            if title in df_map:
-                if df_map[title].columns.equals(df.columns):
-                    df_map[title] = pd.concat(
-                        [df_map[title], df], axis=0, ignore_index=True
-                    )
-                else:
-                    # If the title is already in the map, but we see different columns,
-                    # then we need to merge rather than concatenate
-                    diff_cols = list(set(df) - set(df_map[title].columns))
-                    df_to_merge = df[["Precinct", "Vote Type"] + diff_cols]
-                    df_map[title] = pd.merge(
-                        df_map[title],
-                        df_to_merge,
-                        on=["Precinct", "Vote Type"],
-                        how="left",
-                    )
+            batches = batch_frames[title]
+            batch_key = frozenset(df.columns) - label_cols
+            if batch_key in batches:
+                batches[batch_key] = pd.concat(
+                    [batches[batch_key], df], axis=0, ignore_index=True
+                )
             else:
-                df_map[title] = df
+                batches[batch_key] = df
+
+    for title, batches in batch_frames.items():
+        batch_dfs = list(batches.values())
+        merged = batch_dfs[0]
+        for other in batch_dfs[1:]:
+            diff_cols = [c for c in other.columns if c not in merged.columns]
+            df_to_merge = other[["Precinct", "Vote Type"] + diff_cols]
+            merged = pd.merge(
+                merged, df_to_merge, on=["Precinct", "Vote Type"], how="left"
+            )
+        df_map[title] = merged
 
     if year == "2025":
         df_map = specific_race_overrides(df_map)
@@ -268,14 +285,19 @@ if __name__ == "__main__":
             .drop("Vote Type", axis=1)
         )
         is_precinct = totals_df["name"].str.contains("Precinct", na=False)
-        precinct_df = totals_df.loc[is_precinct].copy().drop(columns=["registered", "turnout"])
+        precinct_df = (
+            totals_df.loc[is_precinct].copy().drop(columns=["registered", "turnout"])
+        )
         precinct_df["id"] = precinct_df["name"].map(id_map)
 
         precinct_df.to_csv(f"{output_dir}/{race_key}.csv", index=False)
 
         if year == "2025":
             totals_df.loc[is_precinct, "board"] = (
-                totals_df.loc[is_precinct, "name"].str.split().str[-1].map(precinct_board_map)
+                totals_df.loc[is_precinct, "name"]
+                .str.split()
+                .str[-1]
+                .map(precinct_board_map)
             )
             totals_df.loc[~is_precinct, "board"] = (
                 totals_df.loc[~is_precinct, "name"].str.split().str[-1]
@@ -295,5 +317,5 @@ if __name__ == "__main__":
                 .mul(100)
                 .round(2)
             )
-            
+
             precinct_board_df.to_csv(f"{output_dir}/{race_key}-cb.csv", index=False)
