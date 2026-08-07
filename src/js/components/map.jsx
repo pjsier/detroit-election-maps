@@ -213,7 +213,7 @@ const Map = (props) => {
       props.dataDomain,
       props.election,
       props.race,
-      props.boards
+      props.voteType
     )
     if (canceled) return
 

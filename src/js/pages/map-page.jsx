@@ -14,14 +14,22 @@ import mapStyle from "../mapStyle"
 const EMBED_MOBILE_CUTOFF = 500
 const MOBILE_CUTOFF = 800
 
+// Years where vote splits are included
+const VOTE_TYPE_YEARS = [2025, 2026]
 // Years where counting boards are included, short term
 const BOARD_YEARS = [2025]
+
+const VOTE_TYPE_OPTIONS = [
+  { label: "Total votes", value: "total" },
+  { label: "Election day votes", value: "election-day" },
+  { label: "Early and absentee votes", value: "all-early-votes" }
+]
 
 const MapPage = (props) => {
   const [state, setState] = createStore({
     election: props.initialElection,
     race: props.initialRace,
-    boards: props.initialBoards,
+    voteType: props.initialVoteType,
   })
   const [mapStore] = useMapStore()
   const [popup, setPopup] = usePopup()
@@ -29,16 +37,25 @@ const MapPage = (props) => {
     updateQueryParams({
       election: state.election,
       race: state.race,
-      boards: state.boards,
+      voteType: state.voteType,
     })
   })
 
+  // TODO: Hack to fix invalid options
+  createEffect(() => {
+    if (+year() === 2026 && state.race === "turnout") {
+      setState({ voteType: "total" })
+    }
+  })
+
   const year = createMemo(() => props.elections[state.election].year)
+  const boards = createMemo(() => props.voteType === "total" && BOARD_YEARS.includes(+year()))
   const raceOptions = createMemo(() =>
     Object.entries(props.elections[state.election].races).map(
       ([value, label]) => ({ label, value })
     )
   )
+  const voteTypeOptions = createMemo(() => BOARD_YEARS.includes(+year()) ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes") : VOTE_TYPE_OPTIONS)
 
   const isEmbedded = document.documentElement.classList.contains("embedded")
   const isMobile =
@@ -55,7 +72,8 @@ const MapPage = (props) => {
         year={year()}
         election={state.election}
         race={state.race}
-        boards={state.boards}
+        boards={boards()}
+        voteType={state.voteType}
         isMobile={isMobile}
         mapOptions={{
           style: mapStyle,
@@ -120,30 +138,7 @@ const MapPage = (props) => {
                 </select>
               </div>
             </Show>
-            <Show when={BOARD_YEARS.includes(+year())}>
-              <div class="radio">
-                <label>
-                  <input
-                    type="radio"
-                    name="boards"
-                    id="boards-all-votes"
-                    checked={state.boards}
-                    onClick={() => setState({ boards: true })}
-                  />
-                  All votes
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="boards"
-                    id="boards-election-day"
-                    checked={!state.boards}
-                    onClick={() => setState({ boards: false })}
-                  />
-                  Election day
-                </label>
-              </div>
-            </Show>
+            {/* TODO: Legend download button */}
             <div class="select">
               <select
                 aria-label="Race"
@@ -155,6 +150,16 @@ const MapPage = (props) => {
                 </For>
               </select>
             </div>
+            {/* TODO: Hack to override not having turnout info broken out for Wayne */}
+            <Show when={VOTE_TYPE_YEARS.includes(+year()) && !(+year() === 2026 && state.race === "turnout")}>
+              <div class="select">
+                <select aria-label="Vote Type" value={state.voteType} onChange={(e) => setState({ voteType: e.target.value })}>
+                  <For each={voteTypeOptions()}>
+                    {({ label, value }) => <option value={value}>{label}</option>}
+                  </For>
+                </select>
+              </div>
+            </Show>
           </form>
           <Legend
             race={state.race}

@@ -265,32 +265,48 @@ if __name__ == "__main__":
             df_val[col] = (
                 pd.to_numeric(df_val[col], errors="coerce").fillna(0).astype(int)
             )
-        totals_df = (
-            df_val.loc[df_val["Vote Type"] == "Total"]
-            .rename(
-                columns={
-                    "Precinct": "name",
-                    "Voters Cast": "ballots",
-                    "Registered Voters": "registered",
-                    "Turnout (%)": "turnout",
-                    "Over Votes": "over_votes",
-                    "Under Votes": "under_votes",
-                    "Total Votes": "total",
-                    "Write-ins": "Write-in",
-                    "McMorrow Mallory": "Mallory McMorrow",
-                    "Robert Swanson Christopher": "Christopher Robert Swanson",
-                    "McKinney Donavan": "Donavan McKinney",
-                }
-            )
-            .drop("Vote Type", axis=1)
+        df_val = df_val.rename(
+            columns={
+                "Precinct": "name",
+                "Voters Cast": "ballots",
+                "Registered Voters": "registered",
+                "Turnout (%)": "turnout",
+                "Over Votes": "over_votes",
+                "Under Votes": "under_votes",
+                "Total Votes": "total",
+                "Write-ins": "Write-in",
+                "McMorrow Mallory": "Mallory McMorrow",
+                "Robert Swanson Christopher": "Christopher Robert Swanson",
+                "McKinney Donavan": "Donavan McKinney",
+            }
         )
-        is_precinct = totals_df["name"].str.contains("Precinct", na=False)
-        precinct_df = (
-            totals_df.loc[is_precinct].copy().drop(columns=["registered", "turnout"])
-        )
-        precinct_df["id"] = precinct_df["name"].map(id_map)
 
-        precinct_df.to_csv(f"{output_dir}/{race_key}.csv", index=False)
+        vote_types = [vt for vt in list(df_val["Vote Type"].unique()) if vt] + [
+            "All Early Votes"
+        ]
+        for vote_type in vote_types:
+            if vote_type == "All Early Votes":
+                vote_type_df = df_val.loc[
+                    ~df_val["Vote Type"].isin(["Total", "Election Day"])
+                ].drop("Vote Type", axis=1)
+                vote_type_df = vote_type_df.groupby("name", as_index=False).sum()
+            else:
+                vote_type_df = df_val.loc[df_val["Vote Type"] == vote_type].drop(
+                    "Vote Type", axis=1
+                )
+            is_precinct = vote_type_df["name"].str.contains("Precinct", na=False)
+            vote_type_precinct_df = (
+                vote_type_df.loc[is_precinct]
+                .copy()
+                .drop(columns=["registered", "turnout"])
+            )
+            vote_type_precinct_df["id"] = vote_type_precinct_df["name"].map(id_map)
+            vote_type_suffix = ""
+            if vote_type != "Total":
+                vote_type_suffix = f"-{slugify(vote_type)}"
+            vote_type_precinct_df.to_csv(
+                f"{output_dir}/{race_key}{vote_type_suffix}.csv", index=False
+            )
 
         if year == "2025":
             totals_df.loc[is_precinct, "board"] = (

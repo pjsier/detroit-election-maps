@@ -63,43 +63,50 @@ def parse_voter_turnout(tree, id_map):
 
 
 def process_contest(contest, id_map):
-    precinct_map = defaultdict(lambda: defaultdict(int))
+    precinct_map = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
     for choice in contest.xpath("./Choice"):
         for vote_type in choice.xpath("./VoteType"):
             for precinct in vote_type.xpath("./Precinct"):
+                vote_type_name = vote_type.attrib["name"].split(" - ")[0]
                 precinct_name = clean_precinct_name(precinct.attrib["name"])
-                precinct_map[precinct_name][
+                precinct_map[precinct_name][vote_type_name][
                     clean_candidate_name(choice.attrib["text"])
                 ] += int(precinct.attrib["votes"])
-                # TODO: How is total calculated?
-                # TODO: Are under and overvotes counted?
+                if vote_type_name not in ["Election", "Election Day"]:
+                    precinct_map[precinct_name]["All Early Votes"][
+                        clean_candidate_name(choice.attrib["text"])
+                    ] += int(precinct.attrib["votes"])
 
-    precinct_rows = []
+                precinct_map[precinct_name]["Total"][
+                    clean_candidate_name(choice.attrib["text"])
+                ] += int(precinct.attrib["votes"])
+
+    precinct_vote_type_map = defaultdict(list)
     missing_precincts = set()
-    for precinct, results in precinct_map.items():
-        # TODO: Can this just be client side?
-        total = sum(results.values())
-        write_ins = 0
-        results_keys = list(results.keys())
-        for results_key in results_keys:
-            if "rite-in" in results_key:
-                write_ins += results.pop(results_key)
-        if precinct not in id_map:
-            print(precinct)
-            continue
-        precinct_rows.append(
-            {
-                "id": id_map[precinct],
-                "name": precinct,
-                "total": total,
-                # Including these not to break join, but would have to be pulled separately
-                "over_votes": "",
-                "under_votes": "",
-                "Write-in": write_ins,
-                **results,
-            }
-        )
-    return contest.attrib["text"], precinct_rows
+    for precinct, vote_type_results in precinct_map.items():
+        for vote_type, results in vote_type_results.items():
+            total = sum(results.values())
+            write_ins = 0
+            results_keys = list(results.keys())
+            for results_key in results_keys:
+                if "rite-in" in results_key:
+                    write_ins += results.pop(results_key)
+            if precinct not in id_map:
+                print(precinct)
+                continue
+            precinct_vote_type_map[vote_type].append(
+                {
+                    "id": id_map[precinct],
+                    "name": precinct,
+                    "total": total,
+                    # Including these not to break join, but would have to be pulled separately
+                    "over_votes": "",
+                    "under_votes": "",
+                    "Write-in": write_ins,
+                    **results,
+                }
+            )
+    return contest.attrib["text"], precinct_vote_type_map
 
 
 if __name__ == "__main__":
@@ -122,10 +129,28 @@ if __name__ == "__main__":
         writer.writerows(turnout_rows)
 
     for contest in tree.xpath(".//Contest"):
-        contest_name, contest_rows = process_contest(contest, id_map)
-        if len(contest_rows) == 0:
+        contest_name, contest_row_map = process_contest(contest, id_map)
+        if "delegate-to-county-convention" in slugify(contest_name):
             continue
-        with open(os.path.join(output_dir, f"{slugify(contest_name)}.csv"), "w") as f:
-            writer = csv.DictWriter(f, fieldnames=list(contest_rows[0].keys()))
-            writer.writeheader()
-            writer.writerows(contest_rows)
+
+        for vote_type, rows in contest_row_map.items():
+            if len(rows) == 0:
+                continue
+            vote_type_suffix = ""
+            if vote_type != "Total":
+                vote_type_suffix = (
+                    "-election-day"
+                    if vote_type == "Election"
+                    else f"-{slugify(vote_type)}"
+                )
+            with open(
+                os.path.join(
+                    output_dir, f"{slugify(contest_name)}{vote_type_suffix}.csv"
+                ),
+                "w",
+            ) as f:
+                writer = csv.DictWriter(
+                    f, fieldnames=list(contest_row_map[vote_type][0].keys())
+                )
+                writer.writeheader()
+                writer.writerows(contest_row_map[vote_type])

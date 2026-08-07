@@ -6,10 +6,15 @@ export const getPrecinctYear = (election, year) => {
   return year
 }
 
-export function fetchCsvData(dataDomain, election, race, boards) {
+export function fetchCsvData(dataDomain, election, race, voteType) {
   const [year, name] = election.split("-")
-  const racePath = boards && BOARD_YEARS.includes(+year) ? `${race}-cb` : race
-  return fetch(`https://${dataDomain}/results/${year}/${name}/${racePath}.csv`)
+  let voteTypeSuffix = ``
+  if (BOARD_YEARS.includes(+year)) {
+    voteTypeSuffix = voteType === "total" ? `-cb` : ``
+  } else if (voteType !== "total") {
+    voteTypeSuffix = `-${voteType}`
+  }
+  return fetch(`https://${dataDomain}/results/${year}/${name}/${race}${voteTypeSuffix}.csv`)
     .then((data) => data.text())
     .then((data) =>
       csvParse(data).map((row) => {
