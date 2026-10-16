@@ -7,23 +7,17 @@ import PopupContent from "../components/popup-content"
 import Geocoder from "../components/geocoder"
 import { useMapStore } from "../providers/map"
 import { usePopup } from "../providers/popup"
-import { updateQueryParams } from "../utils"
+import {
+  updateQueryParams,
+  VOTE_TYPE_YEARS,
+  BOARD_YEARS,
+  VOTE_TYPE_OPTIONS,
+} from "../utils"
 import { getPrecinctYear } from "../utils/data"
 import mapStyle from "../mapStyle"
 
 const EMBED_MOBILE_CUTOFF = 500
 const MOBILE_CUTOFF = 800
-
-// Years where vote splits are included
-const VOTE_TYPE_YEARS = [2025, 2026]
-// Years where counting boards are included, short term
-const BOARD_YEARS = [2025]
-
-const VOTE_TYPE_OPTIONS = [
-  { label: "Total votes", value: "total" },
-  { label: "Election day votes", value: "election-day" },
-  { label: "Early and absentee votes", value: "all-early-votes" }
-]
 
 const MapPage = (props) => {
   const [state, setState] = createStore({
@@ -49,13 +43,19 @@ const MapPage = (props) => {
   })
 
   const year = createMemo(() => props.elections[state.election].year)
-  const boards = createMemo(() => props.voteType === "total" && BOARD_YEARS.includes(+year()))
+  const boards = createMemo(
+    () => props.voteType === "total" && BOARD_YEARS.includes(+year())
+  )
   const raceOptions = createMemo(() =>
     Object.entries(props.elections[state.election].races).map(
       ([value, label]) => ({ label, value })
     )
   )
-  const voteTypeOptions = createMemo(() => BOARD_YEARS.includes(+year()) ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes") : VOTE_TYPE_OPTIONS)
+  const voteTypeOptions = createMemo(() =>
+    BOARD_YEARS.includes(+year())
+      ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
+      : VOTE_TYPE_OPTIONS
+  )
 
   const isEmbedded = document.documentElement.classList.contains("embedded")
   const isMobile =
@@ -151,11 +151,22 @@ const MapPage = (props) => {
               </select>
             </div>
             {/* TODO: Hack to override not having turnout info broken out for Wayne */}
-            <Show when={VOTE_TYPE_YEARS.includes(+year()) && !(+year() === 2026 && state.race === "turnout")}>
+            <Show
+              when={
+                VOTE_TYPE_YEARS.includes(+year()) &&
+                !(+year() === 2026 && state.race === "turnout")
+              }
+            >
               <div class="select">
-                <select aria-label="Vote Type" value={state.voteType} onChange={(e) => setState({ voteType: e.target.value })}>
+                <select
+                  aria-label="Vote Type"
+                  value={state.voteType}
+                  onChange={(e) => setState({ voteType: e.target.value })}
+                >
                   <For each={voteTypeOptions()}>
-                    {({ label, value }) => <option value={value}>{label}</option>}
+                    {({ label, value }) => (
+                      <option value={value}>{label}</option>
+                    )}
                   </For>
                 </select>
               </div>

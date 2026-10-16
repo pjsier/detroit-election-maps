@@ -18,7 +18,6 @@ export default {
   plausibleAnalytics: !!process.env.PLAUSIBLE,
   locale: "en-US",
   azureMapsKey: process.env.VITE_AZURE_MAPS_KEY,
-  precinctYears: [2024],
   electionMetadata: {
     electionOrder: [],
     displayOverrides: {
@@ -27,6 +26,7 @@ export default {
   },
   nav: [
     { url: "/about/", label: "About" },
+    { url: "/reports/", label: "Reports" },
     {
       url: "https://detroitdata.org/dataset/detroit-election-results",
       label: "Data",

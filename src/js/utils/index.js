@@ -1,3 +1,14 @@
+// Years where vote splits are included
+export const VOTE_TYPE_YEARS = [2025, 2026]
+// Years where counting boards are included, short term
+export const BOARD_YEARS = [2025]
+
+export const VOTE_TYPE_OPTIONS = [
+  { label: "Total votes", value: "total" },
+  { label: "Election day votes", value: "election-day" },
+  { label: "Early and absentee votes", value: "all-early-votes" },
+]
+
 export function setupNavToggle() {
   const navToggle = document.getElementById("nav-toggle")
   if (!navToggle) return

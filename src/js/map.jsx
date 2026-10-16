@@ -6,7 +6,7 @@ import MapPage from "./pages/map-page"
 import elections from "./elections"
 import { DEFAULT_ELECTION } from "./utils/map"
 
-function parseMapMetadata() {
+export function parseMapMetadata() {
   const mapMetadataEl = document.getElementById("map-metadata")
   if (!mapMetadataEl) return {}
 

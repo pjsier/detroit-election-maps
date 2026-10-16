@@ -14,7 +14,9 @@ export function fetchCsvData(dataDomain, election, race, voteType) {
   } else if (voteType !== "total") {
     voteTypeSuffix = `-${voteType}`
   }
-  return fetch(`https://${dataDomain}/results/${year}/${name}/${race}${voteTypeSuffix}.csv`)
+  return fetch(
+    `https://${dataDomain}/results/${year}/${name}/${race}${voteTypeSuffix}.csv`
+  )
     .then((data) => data.text())
     .then((data) =>
       csvParse(data).map((row) => {
@@ -43,8 +45,13 @@ export function fetchCsvData(dataDomain, election, race, voteType) {
           }
         })
         return Object.entries(row)
-          .map(([key, value]) => ({ [key]: key === `id` ? value : +value }))
+          .map(([key, value]) => ({
+            [key]: ["id", "name"].includes(key) ? value : +value,
+          }))
           .reduce((acc, cur) => ({ ...acc, ...cur }), {})
       })
     )
 }
+
+export const getCity = (precinctName) =>
+  precinctName.split(", ")[0].replace("City of ", "")
