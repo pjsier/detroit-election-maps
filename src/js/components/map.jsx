@@ -47,7 +47,10 @@ const aggregateElection = (data, election, race, boards) => {
   } else {
     electionResults = data.reduce(
       (agg, val) =>
-        Object.keys(agg).reduce((a, v) => ({ ...a, total: agg.total + val[v], [v]: agg[v] + val[v] }), {}),
+        Object.keys(agg).reduce(
+          (a, v) => ({ ...a, total: agg.total + val[v], [v]: agg[v] + val[v] }),
+          {}
+        ),
       aggBase
     )
   }

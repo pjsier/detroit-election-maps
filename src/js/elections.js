@@ -4,7 +4,7 @@ const elections = {
     label: "2024 Primary",
     date: "8/6/2024",
     races: {
-      "turnout": "Turnout",
+      turnout: "Turnout",
       "representative-in-state-legislature-1st-district-dem":
         "State House, 1st District (DEM)",
       "representative-in-state-legislature-3rd-district-dem":
@@ -77,7 +77,7 @@ const elections = {
     label: "2026 Primary",
     date: "8/4/2026",
     races: {
-      "turnout": "Turnout",
+      turnout: "Turnout",
       "representative-in-state-legislature-2nd-district-dem":
         "State House, 2nd District (DEM)",
       "representative-in-state-legislature-4th-district-dem":
@@ -105,9 +105,12 @@ const elections = {
       "state-senator-3rd-district-dem": "State Senate, 3rd District (DEM)",
       "state-senator-9th-district-dem": "State Senate, 9th District (DEM)",
       "state-senator-10th-district-dem": "State Senate, 10th District (DEM)",
-      "csd-proposal-s-operating-millage-replacement": "Detroit Proposal S - Operating Millage Replacement",
-      "wayne-county-public-transportation-millage-transit": "Wayne County Public Transportation Millage",
-      "county-commissioner-5th-district-partial-term-ending-01-01-2029-dem": "Wayne County Commissioner, 5th District (DEM)",
+      "csd-proposal-s-operating-millage-replacement":
+        "Detroit Proposal S - Operating Millage Replacement",
+      "wayne-county-public-transportation-millage-transit":
+        "Wayne County Public Transportation Millage",
+      "county-commissioner-5th-district-partial-term-ending-01-01-2029-dem":
+        "Wayne County Commissioner, 5th District (DEM)",
       "representative-in-congress-10th-district-dem":
         "U.S. House, 10th District (DEM)",
       "representative-in-congress-11th-district-dem":
@@ -118,9 +121,9 @@ const elections = {
         "U.S. House, 13th District (DEM)",
       "united-states-senator-dem": "U.S. Senator, (DEM)",
       "governor-dem": "Governor (DEM)",
-      "governor-rep": "Governor (REP)"
+      "governor-rep": "Governor (REP)",
     },
-  }
+  },
 }
 
 export default elections
