@@ -223,6 +223,9 @@ if __name__ == "__main__":
             df = extract_page_table(page)
             if year == "2025":
                 df = df.loc[df["Precinct"].str.contains("Detroit")]
+            if df is None:
+                print(idx)
+                continue
             if title is None:
                 print(idx, df.columns)
                 continue
