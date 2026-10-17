@@ -34,7 +34,6 @@ const ReportPage = (props) => {
     () => props.voteType === "total" && BOARD_YEARS.includes(+year())
   )
   const dataResults = createMemo(() => {
-    console.log(state.city)
     return state.data.filter(({ name }) =>
       !!state.city ? getCity(name) === state.city : true
     )
@@ -42,11 +41,11 @@ const ReportPage = (props) => {
   const dataColumns = createMemo(() =>
     state.data.length > 0 ? Object.keys(state.data[0]) : []
   )
-  const tableColumns = createMemo(() => [
-    "name",
-    "ballots",
-    ...dataColumns().filter((col) => col.includes("Percent")),
-  ])
+  const tableColumns = createMemo(() =>
+    state.race === "turnout"
+      ? ["name", "ballots", "registered", "turnout"]
+      : ["name", ...dataColumns().filter((col) => col.includes("Percent"))]
+  )
   const cities = createMemo(() =>
     [
       ...new Set(state.data.map(({ name }) => (name ? getCity(name) : ``))),
@@ -104,6 +103,22 @@ const ReportPage = (props) => {
       ([value, label]) => ({ label, value })
     )
   )
+  const turnoutTotals = createMemo(() => {
+    if (state.race !== "turnout") return {}
+    const ballots = dataResults()
+      .map(({ ballots }) => ballots)
+      .reduce((acc, curr) => acc + curr, 0)
+    const registered = dataResults()
+      .map(({ registered }) => registered)
+      .reduce((acc, curr) => acc + curr, 0)
+
+    return {
+      ballots,
+      turnout: ((ballots / registered) * 100)
+        .toFixed(2)
+        .replace("100.0", "100"),
+    }
+  })
   const voteTypeOptions = createMemo(() =>
     BOARD_YEARS.includes(+year())
       ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
@@ -217,7 +232,7 @@ const ReportPage = (props) => {
             </div>
           </Show>
         </form>
-        <div>
+        <div class="legend-report">
           <For each={candidates()}>
             {({ name, votes }) => (
               <div class="legend-row">
@@ -242,6 +257,26 @@ const ReportPage = (props) => {
               </div>
             )}
           </For>
+          <div class="legend-row">
+            <div class="legend-row-details">
+              <span class="label">
+                <strong>Total</strong>
+              </span>
+            </div>
+            <div class="numbers">
+              <Show
+                when={state.race === "turnout"}
+                fallback={
+                  <div>
+                    <strong>{raceTotal().toLocaleString()}</strong>
+                  </div>
+                }
+              >
+                <div>{turnoutTotals().ballots.toLocaleString()}</div>
+                <div class="percent">{turnoutTotals().turnout}%</div>
+              </Show>
+            </div>
+          </div>
         </div>
         <a
           href={state.url}

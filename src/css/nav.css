@@ -50,6 +50,10 @@
   text-align: right;
 }
 
+#nav-menu li {
+  margin-bottom: 0.5rem;
+}
+
 #nav-toggle {
   display: flex;
   flex-direction: row;
@@ -95,15 +99,20 @@
   #nav-menu {
     flex-direction: row;
   }
+
   #nav-menu li {
     margin-left: 1rem;
+    margin-bottom: 0;
   }
+
   #nav-toggle {
     display: none;
   }
+
   #nav-toggle[aria-expanded="true"] {
     margin-bottom: 0px;
   }
+
   #nav-toggle[aria-expanded="false"] + #nav-menu {
     display: flex;
   }
