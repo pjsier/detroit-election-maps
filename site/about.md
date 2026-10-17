@@ -33,4 +33,4 @@ This project is open source under the MIT license and the source code is availab
 
 ## Contact
 
-Other questions or concerns? Feel free to reach out at [info@detroitelectionsarchive.org](mailto:info@detroitelectionsarchive.org)
+Other questions or concerns? Feel free to reach out at [info@detroitelectionmaps.org](mailto:info@detroitelectionmaps.org)
