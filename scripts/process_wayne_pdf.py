@@ -29,7 +29,7 @@ def get_rotated_headers(page):
     words = page.extract_words(keep_blank_chars=True)
     vertical_words = [w for w in words if not w["upright"]]
     if not vertical_words:
-        return [], 0, []
+        return [], 0, [], 0
     header_bottom = max(w["bottom"] for w in vertical_words)
     sorted_words = sorted(vertical_words, key=lambda w: w["x0"])
     columns = [[sorted_words[0]]]
