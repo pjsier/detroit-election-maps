@@ -126,7 +126,7 @@ const elections = {
   },
   "2026-general": {
     year: 2026,
-    label: "2026 Primary",
+    label: "2026 General",
     date: "11/3/2026",
     races: {
       // TODO:
