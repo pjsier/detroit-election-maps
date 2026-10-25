@@ -31,12 +31,25 @@ const ReportPage = (props) => {
 
   const year = createMemo(() => props.elections[state.election].year)
   const boards = createMemo(
-    () => props.voteType === "total" && BOARD_YEARS.includes(+year())
+    () => state.voteType === "total" && BOARD_YEARS.includes(+year())
   )
   const dataResults = createMemo(() => {
     return state.data.filter(({ name }) =>
       !!state.city ? getCity(name) === state.city : true
     )
+  })
+  const boardResults = createMemo(() => {
+    if (!boards()) {
+      return dataResults()
+    }
+    let boardNames = []
+    let results = []
+    dataResults().forEach((row) => {
+      if (!!row.board && boardNames.includes(row.board)) return
+      results.push(row)
+      boardNames.push(row.board)
+    })
+    return results
   })
   const dataColumns = createMemo(() =>
     state.data.length > 0 ? Object.keys(state.data[0]) : []
@@ -60,11 +73,10 @@ const ReportPage = (props) => {
       ...candidateNames.reduce((a, v) => ({ ...a, [v]: 0 }), {}),
     }
     let electionResults = aggBase
-    // TODO: If board is blank then ignore this?
     if (boards()) {
       const countingBoards = []
-      data.forEach((row) => {
-        if (countingBoards.includes(row.board)) return
+      dataResults().forEach((row) => {
+        if (!!row.board && countingBoards.includes(row.board)) return
         Object.keys(aggBase).forEach((key) => {
           electionResults[key] += row[key]
         })
@@ -124,6 +136,13 @@ const ReportPage = (props) => {
       ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
       : VOTE_TYPE_OPTIONS
   )
+
+  const tableCellContent = (col, row) => {
+    if (col === "name") {
+      return boards() ? `Counting Board ${row.board}` : `Precinct ${row.id}`
+    }
+    return `${row[col]} ${col.includes(" Percent") ? "%" : ``}`
+  }
 
   // Based on solidjs/solid/issues/670#issuecomment-930346644
   // eslint-disable-next-line solid/reactivity
@@ -195,28 +214,30 @@ const ReportPage = (props) => {
               </For>
             </select>
           </div>
-          <label for="city">City</label>
-          <div class="select mb-3">
-            <select
-              id="city"
-              name="city"
-              aria-label="City"
-              value={state.city}
-              onChange={(e) => setState({ city: e.target.value })}
-            >
-              <option></option>
-              <For each={cities()}>
-                {(city) => <option value={city}>{city}</option>}
-              </For>
-            </select>
-          </div>
+          <Show when={year() !== 2025}>
+            <label for="city">City</label>
+            <div class="select mb-3">
+              <select
+                id="city"
+                name="city"
+                aria-label="City"
+                value={state.city}
+                onChange={(e) => setState({ city: e.target.value })}
+              >
+                <option></option>
+                <For each={cities()}>
+                  {(city) => <option value={city}>{city}</option>}
+                </For>
+              </select>
+            </div>
+          </Show>
           <Show
             when={
               VOTE_TYPE_YEARS.includes(+year()) &&
               !(+year() === 2026 && state.race === "turnout")
             }
           >
-            <label for="race">Race</label>
+            <label for="vote-type">Vote type</label>
             <div class="select mb-3">
               <select
                 id="vote-type"
@@ -294,14 +315,13 @@ const ReportPage = (props) => {
             </For>
           </thead>
           <tbody>
-            <For each={dataResults()}>
+            <For each={boards() ? boardResults() : dataResults()}>
               {(row) => (
                 <tr>
                   <For each={tableColumns()}>
                     {(col) => (
                       <td>
-                        {row[col]}
-                        {col.includes(" Percent") ? "%" : ``}
+                        {tableCellContent(col, row)}
                       </td>
                     )}
                   </For>

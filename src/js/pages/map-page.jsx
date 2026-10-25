@@ -44,7 +44,7 @@ const MapPage = (props) => {
 
   const year = createMemo(() => props.elections[state.election].year)
   const boards = createMemo(
-    () => props.voteType === "total" && BOARD_YEARS.includes(+year())
+    () => state.voteType === "total" && BOARD_YEARS.includes(+year())
   )
   const raceOptions = createMemo(() =>
     Object.entries(props.elections[state.election].races).map(
@@ -202,13 +202,13 @@ const MapPage = (props) => {
           source={`precincts-${getPrecinctYear(state.election, +year())}`}
           active={popup.click || popup.hover}
           lngLat={popup.lngLat}
-          boards={state.boards && BOARD_YEARS.includes(+year())}
+          boards={boards()}
         >
           <PopupContent
             displayOverrides={props.displayOverrides}
             candidateColors={mapStore.candidateColors}
             feature={popup.feature}
-            boards={state.boards}
+            boards={boards()}
           />
         </Popup>
       </Show>
