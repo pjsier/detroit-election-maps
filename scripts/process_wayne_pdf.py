@@ -15,7 +15,7 @@ def clean_header(header):
     return re.sub(
         r"\s+",
         " ",
-        header.replace("NP -", "").replace("DEM -", "").replace("REP -", ""),
+        re.sub(r"[A-Z]{2,3} \-", "", header),
     ).strip()
 
 
@@ -29,7 +29,7 @@ def get_rotated_headers(page):
     words = page.extract_words(keep_blank_chars=True)
     vertical_words = [w for w in words if not w["upright"]]
     if not vertical_words:
-        return [], 0, []
+        return [], 0, [], 0
     header_bottom = max(w["bottom"] for w in vertical_words)
     sorted_words = sorted(vertical_words, key=lambda w: w["x0"])
     columns = [[sorted_words[0]]]
@@ -223,6 +223,9 @@ if __name__ == "__main__":
             df = extract_page_table(page)
             if year == "2025":
                 df = df.loc[df["Precinct"].str.contains("Detroit")]
+            if df is None:
+                print(idx)
+                continue
             if title is None:
                 print(idx, df.columns)
                 continue

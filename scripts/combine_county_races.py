@@ -4,6 +4,49 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+def transform_row_names(race, row):
+    output_row = {}
+    for key, value in row.items():
+        if "electors" in race:
+            if "Trump" in key:
+                output_row["Donald Trump"] = value
+                continue
+            elif "Kamala" in key:
+                output_row["Kamala Harris"] = value
+                continue
+            elif "Kennedy" in key:
+                output_row["Roberty F. Kennedy Jr."] = value
+                continue
+            elif "Kishore" in key:
+                output_row["Joseph Kishore"] = value
+                continue
+            elif "Stein" in key:
+                output_row["Jill Stein"] = value
+                continue
+            elif "West" in key:
+                output_row["Cornel West"] = value
+                continue
+            elif "Oliver" in key:
+                output_row["Chase Oliver"] = value
+                continue
+            elif "Terry" in key:
+                output_row["Randall Terry"] = value
+                continue
+        elif "regent" in race:
+            if "Ryder Diggs" in key:
+                output_row["Shauna Ryder Diggs"] = value
+                continue
+        elif "trustee" in race:
+            if "Bahar-Cook" in key:
+                output_row["Rebecca Bahar-Cook"] = value
+                continue
+            elif "Sanger John" in key:
+                output_row["John Paul Sanger"] = value
+                continue
+        output_row[key] = value
+    return output_row
+
+
 if __name__ == "__main__":
     results_dir = Path(sys.argv[1])
 
@@ -23,8 +66,7 @@ if __name__ == "__main__":
         output_rows = []
         for county in counties:
             with Path.open(county_dir_map[county] / f"{race}.csv", "r") as f:
-                # TODO: Have to streamline candidate names
-                output_rows.extend([r for r in csv.DictReader(f)])
+                output_rows.extend([transform_row_names(race, r) for r in csv.DictReader(f)])
 
         fieldnames = list(output_rows[0].keys())
         for key in list(output_rows[-1].keys()) + [

@@ -100,7 +100,7 @@ const ReportPage = (props) => {
       .filter((name) => !["ballots", "registered"].includes(name))
       .map((name, idx) => ({
         name,
-        color: getColor(name, idx),
+        color: getColor(name, state.election, idx),
         votes: electionResults[name === "turnout" ? "total" : name],
       }))
       .sort((a, b) => descending(a.votes, b.votes))
