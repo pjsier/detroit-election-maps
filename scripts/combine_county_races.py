@@ -7,6 +7,13 @@ from pathlib import Path
 def transform_row_names(race, row):
     output_row = {}
     for key, value in row.items():
+        if "president-of-the-united" in race:
+            if "Biden" in key:
+                output_row["Joseph R. Biden Jr."] = value
+                continue
+            if "Williamson" in key:
+                output_row["Marianne Williamson"] = value
+                continue
         if "electors" in race:
             if "Trump" in key:
                 output_row["Donald Trump"] = value

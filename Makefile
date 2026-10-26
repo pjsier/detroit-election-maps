@@ -61,10 +61,8 @@ data/output/%/general/oakland/: data/results/%/oakland/general.xml data/precinct
 data/output/2024/general/wayne/: data/results/2024/wayne/general.pdf
 	poetry run python scripts/process_wayne_pdf.py $< $@
 
-# data/output/2024/presidential-primary/wayne/: data/precincts/map-2024.json data/results/2024/wayne/primary-state.pdf data/results/2024/wayne/primary-senate.pdf data/results/2024/wayne/primary-congress.pdf data/precincts/precincts-2024.geojson
-# 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-state.pdf $@
-# 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-senate.pdf $@
-# 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-congress.pdf $@
+data/output/2024/presidential-primary/wayne/: data/precincts/map-2024.json data/results/2024/wayne/presidential-primary.pdf data/precincts/precincts-2024.geojson
+	poetry run python scripts/process_wayne_pres_primary_pdf.py data/results/2024/wayne/presidential-primary.pdf $@
 
 # TODO: set ID from state precincts
 data/output/2024/primary/wayne/: data/precincts/map-2024.json data/results/2024/wayne/primary-state.pdf data/results/2024/wayne/primary-senate.pdf data/results/2024/wayne/primary-congress.pdf data/precincts/precincts-2024.geojson
@@ -72,11 +70,8 @@ data/output/2024/primary/wayne/: data/precincts/map-2024.json data/results/2024/
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-senate.pdf $@
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-congress.pdf $@
 
-data/output/2024/presidential-primary/turnout.csv: data/output/2024/presidential-primary/wayne/ data/output/2024/presidential-primary/oakland/ data/output/2024/presidential-primary/macomb/
-	poetry run python scripts/combine_county_races.py data/output/2024/general
-
-data/output/%/presidential-primary/macomb/: data/results/%/macomb/presidential-primary.xml data/precincts/map-%.json data/precincts/precincts-%.geojson
-	poetry run python scripts/process_clarity.py $< $@
+data/output/2024/presidential-primary/turnout.csv: data/output/2024/presidential-primary/wayne/ data/output/2024/presidential-primary/oakland/ 
+	poetry run python scripts/combine_county_races.py data/output/2024/presidential-primary
 
 data/output/%/presidential-primary/oakland/: data/results/%/oakland/presidential-primary.xml data/precincts/map-2024.json data/precincts/precincts-%.geojson
 	poetry run python scripts/process_clarity.py $< $@

@@ -7,7 +7,8 @@ export const getPrecinctYear = (election, year) => {
 }
 
 export function fetchCsvData(dataDomain, election, race, voteType) {
-  const [year, name] = election.split("-")
+  const year = election.split("-")[0]
+  const name = election.slice(5) // Skipping over YYYY-
   let voteTypeSuffix = ``
   if (BOARD_YEARS.includes(+year)) {
     voteTypeSuffix = voteType === "total" ? `-cb` : ``
