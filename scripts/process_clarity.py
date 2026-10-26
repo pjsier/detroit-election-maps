@@ -127,6 +127,10 @@ if __name__ == "__main__":
         writer = csv.DictWriter(f, fieldnames=list(turnout_rows[0].keys()))
         writer.writeheader()
         writer.writerows(turnout_rows)
+    with open(os.path.join(output_dir, "turnout-cb.csv"), "w") as f:
+        writer = csv.DictWriter(f, fieldnames=list(turnout_rows[0].keys()))
+        writer.writeheader()
+        writer.writerows(turnout_rows)
 
     for contest in tree.xpath(".//Contest"):
         contest_name, contest_row_map = process_contest(contest, id_map)
@@ -146,6 +150,17 @@ if __name__ == "__main__":
             with open(
                 os.path.join(
                     output_dir, f"{slugify(contest_name)}{vote_type_suffix}.csv"
+                ),
+                "w",
+            ) as f:
+                writer = csv.DictWriter(
+                    f, fieldnames=list(contest_row_map[vote_type][0].keys())
+                )
+                writer.writeheader()
+                writer.writerows(contest_row_map[vote_type])
+            with open(
+                os.path.join(
+                    output_dir, f"{slugify(contest_name)}{vote_type_suffix}-cb.csv"
                 ),
                 "w",
             ) as f:
