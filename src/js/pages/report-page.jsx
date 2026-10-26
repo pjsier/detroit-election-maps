@@ -5,8 +5,8 @@ import { getColor } from "../utils/map"
 import {
   descending,
   updateQueryParams,
-  VOTE_TYPE_YEARS,
-  BOARD_YEARS,
+  VOTE_TYPE_ELECTIONS,
+  BOARD_ELECTIONS,
   VOTE_TYPE_OPTIONS,
 } from "../utils"
 import { fetchCsvData, getCity } from "../utils/data"
@@ -31,7 +31,7 @@ const ReportPage = (props) => {
 
   const year = createMemo(() => props.elections[state.election].year)
   const boards = createMemo(
-    () => state.voteType === "total" && BOARD_YEARS.includes(+year())
+    () => state.voteType === "total" && BOARD_ELECTIONS.includes(state.election)
   )
   const dataResults = createMemo(() => {
     return state.data.filter(({ name }) =>
@@ -132,7 +132,7 @@ const ReportPage = (props) => {
     }
   })
   const voteTypeOptions = createMemo(() =>
-    BOARD_YEARS.includes(+year())
+    BOARD_ELECTIONS.includes(state.election)
       ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
       : VOTE_TYPE_OPTIONS
   )
@@ -233,7 +233,7 @@ const ReportPage = (props) => {
           </Show>
           <Show
             when={
-              VOTE_TYPE_YEARS.includes(+year()) &&
+              VOTE_TYPE_ELECTIONS.includes(state.election) &&
               !(+year() === 2026 && state.race === "turnout")
             }
           >

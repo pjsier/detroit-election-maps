@@ -1,14 +1,14 @@
 const elections = {
-  // "2024-presidential-primary": {
-  //   year: 2024,
-  //   label: "2024 Presidential Primary",
-  //   date: "2/27/2024",
-  //   races: {
-  //     turnout: "Turnout",
-  //     "president-of-the-united-states-dem": "President (DEM)",
-  //     "president-of-the-united-states-rep": "President (REP)",
-  //   }
-  // },
+  "2024-presidential-primary": {
+    year: 2024,
+    label: "2024 Presidential Primary",
+    date: "2/27/2024",
+    races: {
+      turnout: "Turnout",
+      "president-of-the-united-states-dem": "President (DEM)",
+      "president-of-the-united-states-rep": "President (REP)",
+    }
+  },
   "2024-primary": {
     year: 2024,
     label: "2024 Primary",

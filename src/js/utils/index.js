@@ -1,7 +1,5 @@
-// Years where vote splits are included
-export const VOTE_TYPE_YEARS = [2025, 2026]
-// Years where counting boards are included, short term
-export const BOARD_YEARS = [2025]
+export const BOARD_ELECTIONS = ["2024-presidential-primary", "2025-primary", "2025-general"]
+export const VOTE_TYPE_ELECTIONS = ["2024-presidential-primary", "2025-primary", "2025-general", "2026-primary"]
 
 export const VOTE_TYPE_OPTIONS = [
   { label: "Total votes", value: "total" },
@@ -66,8 +64,7 @@ export function formToSearchParams(form) {
   window.history.replaceState(
     {},
     window.document.title,
-    `${window.location.protocol}//${window.location.host}${
-      window.location.pathname
+    `${window.location.protocol}//${window.location.host}${window.location.pathname
     }${params.toString() === `` ? `` : `?${params}`}${window.location.hash}`
   )
 }

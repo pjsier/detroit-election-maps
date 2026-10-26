@@ -172,7 +172,49 @@ def extract_page_table(page, label_cols=("Precinct", "Vote Type")):
         records, columns=[clean_header(header) for header in all_headers]
     )
 
+def build_board_df(vote_type_df, registered_df, id_map, precinct_board_map, label):
+    df = vote_type_df.drop(columns=["registered", "turnout"], errors="ignore").merge(
+        registered_df, on="name", how="left"
+    )
+    df["registered"] = df["registered"].fillna(0)
 
+    board_ids = set(precinct_board_map.values())
+    last_token = df["name"].astype(str).str.split().str[-1]
+    is_precinct = df["name"].str.contains("Precinct", na=False)
+    is_detroit = df["name"].str.contains("Detroit", na=False)
+
+    is_cb_precinct = is_precinct & is_detroit
+    # Counting-board rows: non-precinct Detroit rows whose last token is a known board
+    is_cb_row = (~is_precinct) & is_detroit & last_token.isin(board_ids)
+
+    df["board"] = ""
+    df.loc[is_cb_precinct, "board"] = last_token[is_cb_precinct].map(precinct_board_map)
+    df.loc[is_cb_row, "board"] = last_token[is_cb_row]
+    df["board"] = df["board"].fillna("")
+    has_board = df["board"] != ""
+
+    missing = df.loc[is_cb_precinct & ~has_board, "name"]
+    if not missing.empty:
+        print(f"{label}: no counting board for {list(missing)}")
+
+    # Aggregation key: shared per board, unique per unmatched precinct,
+    # None (dropped from the sum) for everything else (Contest Total, other jurisdictions' non-precinct rows)
+    df["_key"] = None
+    df.loc[has_board, "_key"] = "board:" + df.loc[has_board, "board"]
+    unmatched = is_precinct & ~has_board
+    df.loc[unmatched, "_key"] = "name:" + df.loc[unmatched, "name"]
+
+    board_agg = df.drop(columns=["name", "board"]).groupby("_key", as_index=False).sum()
+
+    precincts = df.loc[is_precinct, ["name", "board", "_key"]].copy()
+    precincts["id"] = precincts["name"].map(id_map)
+    out = precincts[["id", "board", "_key"]].merge(board_agg, on="_key", how="left")
+    out = out.drop(columns="_key")
+    out["turnout"] = (
+        out["ballots"].div(out["registered"]).mul(100).round(2)
+        .replace(float("inf"), float("nan"))
+    )
+    return out
 
 
 def assert_totals_match(race_name, df):
@@ -197,9 +239,15 @@ if __name__ == "__main__":
     ) as f:
         id_map = {k: str(int(v)) for k, v in json.load(f).items()}
 
+    counting_boards_path = os.path.join(BASE_DIR, "data", "counting-boards", f"{year}.csv")
+    has_counting_boards = os.path.exists(counting_boards_path)
+    precinct_board_map = {}
+    if has_counting_boards:
+        with open(counting_boards_path, "r") as f:
+            precinct_board_map = {r["precinct"]: r["board"] for r in csv.DictReader(f)}
+
     df_list: list[pd.DataFrame] = []
     df_map: dict[str, pd.DataFrame] = {}
-    precinct_board_map = {}
 
     # Group races into batches to handle splitting across multiple pages
     label_cols = {"Precinct", "Vote Type"}
@@ -237,11 +285,19 @@ if __name__ == "__main__":
         df_map[title] = merged
 
     df_map["president-of-the-united-states-dem"] = df_map.pop("president-of-the-united-states-dem-2-president-of-the-united-states-rep")
-    df_map["president-of-the-united-states-rep"] = df_map["president-of-the-united-states-rep"].merge(df_map["president-of-the-united-states-dem"][["Precinct", "Ryan L. Binkley","Chris Christie","Ron DeSantis"]], how="left", on="Precinct")
+    df_map["president-of-the-united-states-rep"] = df_map[
+        "president-of-the-united-states-rep"
+    ].merge(
+        df_map["president-of-the-united-states-dem"][
+            ["Precinct", "Vote Type", "Ryan L. Binkley", "Chris Christie", "Ron DeSantis"]
+        ],
+        how="left",
+        on=["Precinct", "Vote Type"],
+    )
     df_map["president-of-the-united-states-dem"] = df_map["president-of-the-united-states-dem"].drop(columns=["Ryan L. Binkley","Chris Christie","Ron DeSantis"])
 
     for race_key, df_val in df_map.items():
-        df_val = df_val.loc[:, ~df_val.columns.duplicated()]
+        df_val = df_val.loc[:, ~df_val.columns.duplicated()].copy()
         for col in df_val.columns:
             if col in ["Precinct", "Vote Type", "Turnout (%)"]:
                 continue
@@ -259,6 +315,10 @@ if __name__ == "__main__":
                 "Total Votes": "total",
                 "Write-ins": "Write-in",
             }
+        )
+        registered_df = (
+            df_val.loc[df_val["Vote Type"] == "Total", ["name", "registered"]]
+            .drop_duplicates("name")
         )
 
         vote_types = [vt for vt in list(df_val["Vote Type"].unique()) if vt] + [
@@ -287,3 +347,8 @@ if __name__ == "__main__":
             vote_type_precinct_df.to_csv(
                 f"{output_dir}/{race_key}{vote_type_suffix}.csv", index=False
             )
+
+            build_board_df(
+                vote_type_df, registered_df, id_map, precinct_board_map,
+                f"{race_key}{vote_type_suffix}",
+            ).to_csv(f"{output_dir}/{race_key}{vote_type_suffix}-cb.csv", index=False)
