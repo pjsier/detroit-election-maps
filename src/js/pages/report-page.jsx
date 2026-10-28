@@ -139,7 +139,7 @@ const ReportPage = (props) => {
 
   const tableCellContent = (col, row) => {
     if (col === "name") {
-      return boards() ? `Counting Board ${row.board}` : `Precinct ${row.id}`
+      return (boards() && row.board && ~row.name) ? `Detroit Counting Board ${row.board}` : (row.name || `Precinct ${row.id}`)
     }
     return `${row[col]} ${col.includes(" Percent") ? "%" : ``}`
   }

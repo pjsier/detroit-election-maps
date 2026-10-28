@@ -227,7 +227,7 @@ def build_board_df(vote_type_df, registered_df, id_map, precinct_board_map, labe
 
     precincts = df.loc[is_precinct, ["name", "board", "_key"]].copy()
     precincts["id"] = precincts["name"].map(id_map)
-    out = precincts[["id", "board", "_key"]].merge(board_agg, on="_key", how="left")
+    out = precincts[["id", "name", "board", "_key"]].merge(board_agg, on="_key", how="left")
     out = out.drop(columns="_key")
     out["turnout"] = (
         out["ballots"].div(out["registered"]).mul(100).round(2)

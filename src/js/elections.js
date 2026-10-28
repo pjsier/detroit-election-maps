@@ -54,6 +54,7 @@ const elections = {
       turnout: "Turnout",
       "electors-of-president-and-vice-president-of-the-united-states":
         "President",
+      "united-states-senator": "U.S. Senator",
     },
   },
   "2025-primary": {

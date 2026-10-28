@@ -1,7 +1,5 @@
 S3_BUCKET = detroit-election-maps
 ACCOUNT_ID = 7718b66fac7dfe0e5badaa986de51a5d
-# https://results.enr.clarityelections.com/MI/OaklandMI/127075/web.345435/#/summary
-# https://results.enr.clarityelections.com/MI/Macomb/126774/web.345435/#/summary
 
 all: tiles/precincts-2024/ tiles/precincts-2025/ tiles/precincts-2026/
 
@@ -14,7 +12,7 @@ deploy-ckan-data:
 deploy-results:
 	aws --profile=detmaps \
 		--endpoint-url https://$(ACCOUNT_ID).r2.cloudflarestorage.com \
-		s3 sync ./data/output/ s3://$(S3_BUCKET)/results/ \
+		s3 sync ./data/output/2024/general s3://$(S3_BUCKET)/results/2024/general \
 		--acl=public-read \
 		--cache-control "public, max-age=0, must-revalidate"
 
@@ -64,7 +62,6 @@ data/output/2024/general/wayne/: data/results/2024/wayne/general.pdf
 data/output/2024/presidential-primary/wayne/: data/precincts/map-2024.json data/results/2024/wayne/presidential-primary.pdf data/precincts/precincts-2024.geojson
 	poetry run python scripts/process_wayne_pres_primary_pdf.py data/results/2024/wayne/presidential-primary.pdf $@
 
-# TODO: set ID from state precincts
 data/output/2024/primary/wayne/: data/precincts/map-2024.json data/results/2024/wayne/primary-state.pdf data/results/2024/wayne/primary-senate.pdf data/results/2024/wayne/primary-congress.pdf data/precincts/precincts-2024.geojson
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-state.pdf $@
 	poetry run python scripts/process_wayne_alt_pdf.py data/results/2024/wayne/primary-senate.pdf $@
@@ -76,7 +73,6 @@ data/output/2024/presidential-primary/turnout.csv: data/output/2024/presidential
 data/output/%/presidential-primary/oakland/: data/results/%/oakland/presidential-primary.xml data/precincts/map-2024.json data/precincts/precincts-%.geojson
 	poetry run python scripts/process_clarity.py $< $@
 
-# TODO:
 data/output/2024/presidential-primary/wayne/: data/results/2024/wayne/presidential-primary.pdf
 	poetry run python scripts/process_wayne_pdf.py $< $@
 

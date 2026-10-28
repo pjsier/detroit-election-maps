@@ -40,7 +40,7 @@ def clean_precinct_name(precinct_name):
 
 
 def clean_candidate_name(candidate_name):
-    return candidate_name.replace(",", "")
+    return re.sub(r"[A-Z]{3} ", "", candidate_name.replace(",", ""))
 
 
 def parse_voter_turnout(tree, id_map):
