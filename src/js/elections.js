@@ -1,4 +1,14 @@
 const elections = {
+  "2024-presidential-primary": {
+    year: 2024,
+    label: "2024 Presidential Primary",
+    date: "2/27/2024",
+    races: {
+      turnout: "Turnout",
+      "president-of-the-united-states-dem": "President (DEM)",
+      "president-of-the-united-states-rep": "President (REP)",
+    }
+  },
   "2024-primary": {
     year: 2024,
     label: "2024 Primary",
@@ -36,16 +46,17 @@ const elections = {
       "united-states-senator-dem": "U.S. Senator, (DEM)",
     },
   },
-  // "2024-general": {
-  //   year: 2024,
-  //   label: "2024 General",
-  //   date: "11/5/2024",
-  //   races: {
-  //     turnout: "Turnout",
-  //     "electors-of-president-and-vice-president-of-the-united-states":
-  //       "President",
-  //   },
-  // },
+  "2024-general": {
+    year: 2024,
+    label: "2024 General",
+    date: "11/5/2024",
+    races: {
+      turnout: "Turnout",
+      "electors-of-president-and-vice-president-of-the-united-states":
+        "President",
+      "united-states-senator": "U.S. Senator",
+    },
+  },
   "2025-primary": {
     year: 2025,
     label: "2025 Primary",

@@ -11,11 +11,15 @@ import pdfplumber
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def is_counting_board_election(output_dir: str) -> bool:
+    return ("2025" in output_dir) or (("2024" in output_dir) and (("presidential" in output_dir) or ("general" in output_dir)))
+
+
 def clean_header(header):
     return re.sub(
         r"\s+",
         " ",
-        header.replace("NP -", "").replace("DEM -", "").replace("REP -", ""),
+        re.sub(r"[A-Z]{2,3} \-", "", header),
     ).strip()
 
 
@@ -187,6 +191,51 @@ def specific_race_overrides(df_map):
     return df_map
 
 
+def build_board_df(vote_type_df, registered_df, id_map, precinct_board_map, label):
+    df = vote_type_df.drop(columns=["registered", "turnout"], errors="ignore").merge(
+        registered_df, on="name", how="left"
+    )
+    df["registered"] = df["registered"].fillna(0)
+
+    board_ids = set(precinct_board_map.values())
+    last_token = df["name"].astype(str).str.split().str[-1]
+    is_precinct = df["name"].str.contains("Precinct", na=False)
+    is_detroit = df["name"].str.contains("Detroit", na=False)
+
+    is_cb_precinct = is_precinct & is_detroit
+    # Counting-board rows: non-precinct Detroit rows whose last token is a known board
+    is_cb_row = (~is_precinct) & is_detroit & last_token.isin(board_ids)
+
+    df["board"] = ""
+    df.loc[is_cb_precinct, "board"] = last_token[is_cb_precinct].map(precinct_board_map)
+    df.loc[is_cb_row, "board"] = last_token[is_cb_row]
+    df["board"] = df["board"].fillna("")
+    has_board = df["board"] != ""
+
+    missing = df.loc[is_cb_precinct & ~has_board, "name"]
+    if not missing.empty:
+        print(f"{label}: no counting board for {list(missing)}")
+
+    # Aggregation key: shared per board, unique per unmatched precinct,
+    # None (dropped from the sum) for everything else (Contest Total, other jurisdictions' non-precinct rows)
+    df["_key"] = None
+    df.loc[has_board, "_key"] = "board:" + df.loc[has_board, "board"]
+    unmatched = is_precinct & ~has_board
+    df.loc[unmatched, "_key"] = "name:" + df.loc[unmatched, "name"]
+
+    board_agg = df.drop(columns=["name", "board"]).groupby("_key", as_index=False).sum()
+
+    precincts = df.loc[is_precinct, ["name", "board", "_key"]].copy()
+    precincts["id"] = precincts["name"].map(id_map)
+    out = precincts[["id", "name", "board", "_key"]].merge(board_agg, on="_key", how="left")
+    out = out.drop(columns="_key")
+    out["turnout"] = (
+        out["ballots"].div(out["registered"]).mul(100).round(2)
+        .replace(float("inf"), float("nan"))
+    )
+    return out
+
+
 def assert_totals_match(race_name, df):
     df["Voters Cast"] = (
         pd.to_numeric(df["Voters Cast"], errors="coerce").fillna(0).astype(int)
@@ -250,7 +299,7 @@ if __name__ == "__main__":
             )
         df_map[title] = merged
 
-    if year == "2025":
+    if is_counting_board_election(output_dir):
         df_map = specific_race_overrides(df_map)
         with open(
             os.path.join(BASE_DIR, "data", "counting-boards", f"{year}.csv"), "r"
@@ -260,8 +309,6 @@ if __name__ == "__main__":
 
     for race_key, df_val in df_map.items():
         df_val = df_val.loc[:, ~df_val.columns.duplicated()]
-        # TODO: Only run for Detroit-specific
-        # assert_totals_match(race_key, df_val)
         for col in df_val.columns:
             if col in ["Precinct", "Vote Type", "Turnout (%)"]:
                 continue
@@ -282,6 +329,10 @@ if __name__ == "__main__":
                 "Robert Swanson Christopher": "Christopher Robert Swanson",
                 "McKinney Donavan": "Donavan McKinney",
             }
+        )
+        registered_df = (
+            df_val.loc[df_val["Vote Type"] == "Total", ["name", "registered"]]
+            .drop_duplicates("name")
         )
 
         vote_types = [vt for vt in list(df_val["Vote Type"].unique()) if vt] + [
@@ -311,30 +362,8 @@ if __name__ == "__main__":
                 f"{output_dir}/{race_key}{vote_type_suffix}.csv", index=False
             )
 
-        if year == "2025":
-            totals_df.loc[is_precinct, "board"] = (
-                totals_df.loc[is_precinct, "name"]
-                .str.split()
-                .str[-1]
-                .map(precinct_board_map)
-            )
-            totals_df.loc[~is_precinct, "board"] = (
-                totals_df.loc[~is_precinct, "name"].str.split().str[-1]
-            )
-            precinct_board_agg = (
-                totals_df.drop(columns=["name", "turnout"])
-                .groupby("board")
-                .sum()
-                .reset_index()
-            )
-            precinct_board_df = precinct_df[["id", "board"]].merge(
-                precinct_board_agg, on="board", how="left"
-            )
-            precinct_board_df["turnout"] = (
-                precinct_board_df["ballots"]
-                .div(precinct_board_df["registered"])
-                .mul(100)
-                .round(2)
-            )
-
-            precinct_board_df.to_csv(f"{output_dir}/{race_key}-cb.csv", index=False)
+            if is_counting_board_election(output_dir):
+                build_board_df(
+                    vote_type_df, registered_df, id_map, precinct_board_map,
+                    f"{race_key}{vote_type_suffix}",
+                ).to_csv(f"{output_dir}/{race_key}{vote_type_suffix}-cb.csv", index=False)

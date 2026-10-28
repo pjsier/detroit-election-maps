@@ -9,8 +9,8 @@ import { useMapStore } from "../providers/map"
 import { usePopup } from "../providers/popup"
 import {
   updateQueryParams,
-  VOTE_TYPE_YEARS,
-  BOARD_YEARS,
+  VOTE_TYPE_ELECTIONS,
+  BOARD_ELECTIONS,
   VOTE_TYPE_OPTIONS,
 } from "../utils"
 import { getPrecinctYear } from "../utils/data"
@@ -44,15 +44,15 @@ const MapPage = (props) => {
 
   const year = createMemo(() => props.elections[state.election].year)
   const boards = createMemo(
-    () => state.voteType === "total" && BOARD_YEARS.includes(+year())
-  )
+    () => state.voteType === "total" && BOARD_ELECTIONS.includes(state.election))
+
   const raceOptions = createMemo(() =>
     Object.entries(props.elections[state.election].races).map(
       ([value, label]) => ({ label, value })
     )
   )
   const voteTypeOptions = createMemo(() =>
-    BOARD_YEARS.includes(+year())
+    BOARD_ELECTIONS.includes(state.election)
       ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
       : VOTE_TYPE_OPTIONS
   )
@@ -153,7 +153,7 @@ const MapPage = (props) => {
             {/* TODO: Hack to override not having turnout info broken out for Wayne */}
             <Show
               when={
-                VOTE_TYPE_YEARS.includes(+year()) &&
+                VOTE_TYPE_ELECTIONS.includes(state.election) &&
                 !(+year() === 2026 && state.race === "turnout")
               }
             >

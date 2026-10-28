@@ -1,16 +1,20 @@
 import { csvParse } from "d3-dsv"
-
-const BOARD_YEARS = [2025]
+import { BOARD_ELECTIONS, VOTE_TYPE_ELECTIONS } from "."
 
 export const getPrecinctYear = (election, year) => {
   return year
 }
 
 export function fetchCsvData(dataDomain, election, race, voteType) {
-  const [year, name] = election.split("-")
+  const year = election.split("-")[0]
+  const name = election.slice(5) // Skipping over YYYY-
   let voteTypeSuffix = ``
-  if (BOARD_YEARS.includes(+year)) {
+  if (BOARD_ELECTIONS.includes(election)) {
     voteTypeSuffix = voteType === "total" ? `-cb` : ``
+    if (VOTE_TYPE_ELECTIONS.includes(election) && voteType !== "total") {
+      voteTypeSuffix += `-${voteType}`
+    }
+
   } else if (voteType !== "total") {
     voteTypeSuffix = `-${voteType}`
   }

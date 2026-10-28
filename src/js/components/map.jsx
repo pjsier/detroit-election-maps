@@ -34,11 +34,10 @@ const aggregateElection = (data, election, race, boards) => {
     ...candidateNames.reduce((a, v) => ({ ...a, [v]: 0 }), {}),
   }
   let electionResults = aggBase
-  // TODO: If board is blank then ignore this?
   if (boards) {
     const countingBoards = []
     data.forEach((row) => {
-      if (countingBoards.includes(row.board)) return
+      if (!!row.board && countingBoards.includes(row.board)) return
       Object.keys(aggBase).forEach((key) => {
         electionResults[key] += row[key]
       })
@@ -58,7 +57,7 @@ const aggregateElection = (data, election, race, boards) => {
     .filter((name) => !["ballots", "registered"].includes(name))
     .map((name, idx) => ({
       name,
-      color: getColor(name, idx),
+      color: getColor(name, election, idx),
       votes: electionResults[name === "turnout" ? "total" : name],
     }))
     .sort((a, b) => descending(a.votes, b.votes))
@@ -66,7 +65,7 @@ const aggregateElection = (data, election, race, boards) => {
   // TODO: simplify here, maybe pull out of candidates?
   const candidateColors = candidateNames
     .filter((name) => !["ballots", "registered"].includes(name))
-    .reduce((a, v, idx) => ({ ...a, [v]: getColor(v, idx) }), {})
+    .reduce((a, v, idx) => ({ ...a, [v]: getColor(v, election, idx) }), {})
 
   // Workaround for turnout display
   if (electionResults.turnout) {
@@ -126,7 +125,7 @@ const createPrecinctLayerDefinition = (
   legendData: aggregateElection(data, election, race, boards),
 })
 
-function processFeatureData(dataCols, feature) {
+function processFeatureData(dataCols, election, feature) {
   const featureData = fromEntries(
     Object.entries(feature).filter(([col]) => dataCols.includes(col))
   )
@@ -140,7 +139,7 @@ function processFeatureData(dataCols, feature) {
   return {
     feature,
     colorValue,
-    color: getColor(featureDataEntries[colorIndex][0], colorIndex),
+    color: getColor(featureDataEntries[colorIndex][0], election, colorIndex),
   }
 }
 
@@ -222,7 +221,7 @@ const Map = (props) => {
 
     let dataCols = getDataCols(data[0] || [])
     const featureData = data.map((feature) =>
-      processFeatureData(dataCols, feature)
+      processFeatureData(dataCols, props.election, feature)
     )
     const maxColorScale = getMaxColorScale(
       featureData.map(({ colorValue }) => colorValue)
