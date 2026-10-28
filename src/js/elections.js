@@ -140,13 +140,13 @@ const elections = {
     label: "2026 General",
     date: "11/3/2026",
     races: {
-      // TODO:
       "turnout": "Turnout",
       "representative-in-congress-12th-district":
         "U.S. House, 12th District",
       "representative-in-congress-13th-district":
         "U.S. House, 13th District",
       "united-states-senator": "U.S. Senator",
+      "governor": "Governor",
     },
   }
 }
