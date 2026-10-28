@@ -15,7 +15,8 @@ export const COLOR_SCHEME = [
 
 const COLOR_OVERRIDES = {
   "2024-general": { "Kamala Harris": "#1f77b4", "Donald Trump": "#d62728", "Jill Stein": "#2ca02c", "Write-in": "#ff7f0e", "Elissa Slotkin": "#1f77b4", "Mike Rogers": "#d62728", "Douglas P. Marsh": "#2ca02c", },
-  "2026-primary": { "Mohammad Alam": "#2ca02c" }
+  "2026-primary": { "Mohammad Alam": "#2ca02c" },
+  "2026-general": { "Abdul El-Sayed": "#1f77b4", "Mike Rogers": "#d62728", "Jocelyn Benson": "#1f77b4", "John James": "#d62728" }
 }
 
 export const getColor = (candidate, election, index) => {
