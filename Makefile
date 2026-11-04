@@ -12,7 +12,7 @@ deploy-ckan-data:
 deploy-results:
 	aws --profile=detmaps \
 		--endpoint-url https://$(ACCOUNT_ID).r2.cloudflarestorage.com \
-		s3 sync ./data/output/2024/general s3://$(S3_BUCKET)/results/2024/general \
+		s3 sync ./data/output s3://$(S3_BUCKET)/results \
 		--acl=public-read \
 		--cache-control "public, max-age=0, must-revalidate"
 
