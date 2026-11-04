@@ -22,7 +22,7 @@ def transform_row_names(race, row):
                 output_row["Kamala Harris"] = value
                 continue
             elif "Kennedy" in key:
-                output_row["Roberty F. Kennedy Jr."] = value
+                output_row["Robert F. Kennedy Jr."] = value
                 continue
             elif "Kishore" in key:
                 output_row["Joseph Kishore"] = value
