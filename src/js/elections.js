@@ -148,7 +148,7 @@ const elections = {
       "representative-in-congress-13th-district":
         "U.S. House, 13th District",
       "united-states-senator": "U.S. Senator",
-      // "governor": "Governor",
+      "governor-and-lieutenant-governor": "Governor",
       "secretary-of-state": "Secretary of State",
       // "attorney-general": "Attorney General",
       // "proposal-2026-1-state-of-michigan": "Proposal 1",

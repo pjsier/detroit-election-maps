@@ -32,7 +32,7 @@ const COLOR_OVERRIDES = {
     "Garlin Gilchrist II": "#1f77b4",
     "Anthony G. Forlini": "#d62728",
     "Eli Savit": "#1f77b4",
-    "Jason Dye": "#d62728",
+    "Doug Lloyd": "#d62728",
     "Christina Bertrand Hines": "#1f77b4",
     "Michael Bouchard": "#d62728",
     "Jeremy Moss": "#1f77b4",

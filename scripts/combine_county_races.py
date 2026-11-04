@@ -50,6 +50,10 @@ def transform_row_names(race, row):
             elif "Sanger John" in key:
                 output_row["John Paul Sanger"] = value
                 continue
+        elif "attorney-general" in race:
+            if "Ludtke" in key:
+                output_row["John Perry Ludtke Jr"] = value
+                continue
         output_row[key] = value
     return output_row
 
