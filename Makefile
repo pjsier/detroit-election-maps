@@ -26,9 +26,8 @@ deploy-tiles:
     	--content-encoding gzip \
 		--cache-control 'Cache-Control: "public, max-age=86400"'
 
-# TODO: Download files to import into the following steps
-data/output/2026/general/turnout.csv: data/output/2026/primary/wayne/ data/output/2026/primary/oakland/ data/output/2026/primary/macomb/
-	poetry run python scripts/combine_county_races.py data/output/2026/primary
+data/output/2026/general/turnout.csv: data/output/2026/general/wayne/ data/output/2026/general/oakland/ data/output/2026/general/macomb/
+	poetry run python scripts/combine_county_races.py data/output/2026/general
 
 data/output/2026/general/wayne/turnout.csv:
 	poetry run python scripts/process_totalvote_turnout.py data/results/2026/wayne/primary-turnout.json $@

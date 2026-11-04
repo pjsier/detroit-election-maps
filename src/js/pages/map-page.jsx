@@ -10,6 +10,7 @@ import { usePopup } from "../providers/popup"
 import {
   updateQueryParams,
   VOTE_TYPE_ELECTIONS,
+  EARLY_VOTE_TYPE_ELECTIONS,
   BOARD_ELECTIONS,
   VOTE_TYPE_OPTIONS,
 } from "../utils"
@@ -44,7 +45,7 @@ const MapPage = (props) => {
 
   const year = createMemo(() => props.elections[state.election].year)
   const boards = createMemo(
-    () => state.voteType === "total" && BOARD_ELECTIONS.includes(state.election))
+    () => BOARD_ELECTIONS.includes(state.election) && (state.voteType === "total" || (VOTE_TYPE_ELECTIONS.includes(state.election) && state.voteType !== "election-day")))
 
   const raceOptions = createMemo(() =>
     Object.entries(props.elections[state.election].races).map(
@@ -52,7 +53,7 @@ const MapPage = (props) => {
     )
   )
   const voteTypeOptions = createMemo(() =>
-    BOARD_ELECTIONS.includes(state.election)
+    (BOARD_ELECTIONS.includes(state.election) && !EARLY_VOTE_TYPE_ELECTIONS.includes(state.election))
       ? VOTE_TYPE_OPTIONS.filter(({ value }) => value !== "all-early-votes")
       : VOTE_TYPE_OPTIONS
   )

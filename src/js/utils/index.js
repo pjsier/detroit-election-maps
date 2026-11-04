@@ -1,5 +1,23 @@
-export const BOARD_ELECTIONS = ["2024-presidential-primary", "2024-general", "2025-primary", "2025-general"]
-export const VOTE_TYPE_ELECTIONS = ["2024-presidential-primary", "2024-general", "2025-primary", "2025-general", "2026-primary"]
+export const BOARD_ELECTIONS = [
+  "2024-presidential-primary",
+  "2024-general",
+  "2025-primary",
+  "2025-general",
+  "2026-general",
+]
+
+export const EARLY_VOTE_TYPE_ELECTIONS = [
+  "2026-general",
+]
+
+export const VOTE_TYPE_ELECTIONS = [
+  "2024-presidential-primary",
+  "2024-general",
+  "2025-primary",
+  "2025-general",
+  "2026-primary",
+  "2026-general",
+]
 
 export const VOTE_TYPE_OPTIONS = [
   { label: "Total votes", value: "total" },

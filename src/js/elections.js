@@ -141,12 +141,18 @@ const elections = {
     date: "11/3/2026",
     races: {
       "turnout": "Turnout",
+      "representative-in-congress-10th-district": "U.S. House, 10th District",
+      "representative-in-congress-11th-district": "U.S. House, 11th District",
       "representative-in-congress-12th-district":
         "U.S. House, 12th District",
       "representative-in-congress-13th-district":
         "U.S. House, 13th District",
       "united-states-senator": "U.S. Senator",
       "governor": "Governor",
+      "secretary-of-state": "Secretary of State",
+      "attorney-general": "Attorney General",
+      "proposal-2026-1-state-of-michigan": "Proposal 1",
+      "proposal-2026-2-state-of-michigan": "Proposal 2",
     },
   }
 }

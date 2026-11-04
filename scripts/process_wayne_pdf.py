@@ -12,7 +12,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def is_counting_board_election(output_dir: str) -> bool:
-    return ("2025" in output_dir) or (("2024" in output_dir) and (("presidential" in output_dir) or ("general" in output_dir)))
+    return ("2025" in output_dir) or (("2024" in output_dir) and (("presidential" in output_dir) or ("general" in output_dir))) or (("2026" in output_dir) and ("general" in output_dir))
 
 
 def clean_header(header):
