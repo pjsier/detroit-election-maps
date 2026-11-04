@@ -12,7 +12,7 @@ deploy-ckan-data:
 deploy-results:
 	aws --profile=detmaps \
 		--endpoint-url https://$(ACCOUNT_ID).r2.cloudflarestorage.com \
-		s3 sync ./data/output s3://$(S3_BUCKET)/results \
+		s3 sync ./data/output/2026/general s3://$(S3_BUCKET)/results/2026/general \
 		--acl=public-read \
 		--cache-control "public, max-age=0, must-revalidate"
 
@@ -26,7 +26,7 @@ deploy-tiles:
     	--content-encoding gzip \
 		--cache-control 'Cache-Control: "public, max-age=86400"'
 
-data/output/2026/general/turnout.csv: data/output/2026/general/wayne/ data/output/2026/general/oakland/ data/output/2026/general/macomb/
+data/output/2026/general/turnout.csv:  data/output/2026/general/oakland/ data/output/2026/general/macomb/
 	poetry run python scripts/combine_county_races.py data/output/2026/general
 
 data/output/2026/general/wayne/turnout.csv:

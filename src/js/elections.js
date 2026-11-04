@@ -150,9 +150,9 @@ const elections = {
       "united-states-senator": "U.S. Senator",
       "governor-and-lieutenant-governor": "Governor",
       "secretary-of-state": "Secretary of State",
-      // "attorney-general": "Attorney General",
-      // "proposal-2026-1-state-of-michigan": "Proposal 1",
-      // "proposal-2026-2-state-of-michigan": "Proposal 2",
+      "attorney-general": "Attorney General",
+      "proposal-2026-1-constitutional-convention": "Proposal 1: Constitutional convention",
+      "proposal-2026-2-campaign-contributions": "Proposal 2: Campaign contributions",
     },
   }
 }

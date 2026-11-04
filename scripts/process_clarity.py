@@ -23,6 +23,10 @@ def slugify(text):
         return f"{slug_text[4:]}-dem"
     if slug_text.startswith("rep-"):
         return f"{slug_text[4:]}-rep"
+    if "proposal-2026-1" in slug_text:
+        return "proposal-2026-1-constitutional-convention"
+    if "proposal-2026-2" in slug_text:
+        return "proposal-2026-2-campaign-contributions"
     return slug_text
 
 
