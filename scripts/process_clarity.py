@@ -27,7 +27,9 @@ def slugify(text):
         return "proposal-2026-1-constitutional-convention"
     if "proposal-2026-2" in slug_text:
         return "proposal-2026-2-campaign-contributions"
-    return slug_text
+    if "lieutenant" in slug_text:
+        return "governor-and-lieutenant-governor"
+    return slug_text.replace("state-representative-", "representative-in-state-legislature-").replace("state-senator-", "representative-in-state-senate-")
 
 
 def clean_precinct_name(precinct_name):

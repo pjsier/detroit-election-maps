@@ -26,15 +26,15 @@ deploy-tiles:
     	--content-encoding gzip \
 		--cache-control 'Cache-Control: "public, max-age=86400"'
 
-data/output/2026/general/turnout.csv:  data/output/2026/general/oakland/ data/output/2026/general/macomb/
+data/output/2026/general/turnout.csv: data/output/2026/general/wayne/ data/output/2026/general/wayne-supp/ data/output/2026/general/oakland/ data/output/2026/general/macomb/
 	poetry run python scripts/combine_county_races.py data/output/2026/general
 
-data/output/2026/general/wayne/turnout.csv:
-	poetry run python scripts/process_totalvote_turnout.py data/results/2026/wayne/primary-turnout.json $@
+data/output/2026/general/wayne/: data/results/2026/wayne/general.xlsx
+	poetry run python scripts/process_wayne_xlsx.py $< $@
 
-# TODO: Also run for nonpartisan?
-data/output/2026/general/wayne/: data/results/2026/wayne/general.pdf
-	poetry run python scripts/process_wayne_pdf.py $< $@
+# This is for a separate XLSX file provided by Wayne county for areas with initially off tabulation
+data/output/2026/general/wayne-supp/: data/results/2026/wayne-supp/general.xlsx
+	poetry run python scripts/process_wayne_xlsx.py $< $@
 
 data/output/%/general/macomb/: data/results/%/macomb/general.xml data/precincts/map-%.json data/precincts/precincts-%.geojson
 	poetry run python scripts/process_clarity.py $< $@

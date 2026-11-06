@@ -47,9 +47,21 @@ if __name__ == "__main__":
         if "Sumpter Township" in name:
             precinct_num = name.split(", ")[-1]
             output_map[f"Township of Sumpter, {precinct_num}"] = precinct_id
-        if "Village of Grosse Pointe Shores":
+        if "Village of Grosse Pointe Shores" in name:
             precinct_num = name.split(" ")[-1]
             output_map[f"The {name.replace('A Michigan', 'a Michigan')}"] = precinct_id
             output_map[f"Grosse Pointe Shores {precinct_num}"] = precinct_id
+        if "Canton Township" in name:
+            precinct_num = name.split(" ")[-1]
+            output_map[f"Charter Township of Canton, Precinct {precinct_num}"] = precinct_id
+        if "Plymouth Township" in name:
+            precinct_num = name.split(" ")[-1]
+            output_map[f"Charter Township of Plymouth, Precinct {precinct_num}"] = precinct_id
+        if "Redford Township" in name:
+            precinct_num = name.split(" ")[-1]
+            output_map[f"Charter Township of Redford, Precinct {precinct_num}"] = precinct_id
+        if "Van Buren Township" in name:
+            precinct_num = name.split(" ")[-1]
+            output_map[f"Charter Township of Van Buren, Precinct {precinct_num}"] = precinct_id
 
     json.dump(output_map, sys.stdout)

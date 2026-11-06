@@ -54,6 +54,10 @@ def transform_row_names(race, row):
             if "Ludtke" in key:
                 output_row["John Perry Ludtke Jr"] = value
                 continue
+        if "governor" in race:
+            gov_candidate = key.split("/")[0].strip().split("&")[0].strip()
+            output_row[gov_candidate] = value
+            continue
         output_row[key] = value
     return output_row
 
@@ -98,5 +102,6 @@ if __name__ == "__main__":
                 writer.writeheader()
                 writer.writerows(output_rows)
         except ValueError as e:
+            print(race)
             print(e)
             continue

@@ -153,6 +153,13 @@ const elections = {
       "attorney-general": "Attorney General",
       "proposal-2026-1-constitutional-convention": "Proposal 1: Constitutional convention",
       "proposal-2026-2-campaign-contributions": "Proposal 2: Campaign contributions",
+      "representative-in-state-legislature-27th-district": "State House, 27th District",
+      "representative-in-state-legislature-28th-district": "State House, 28th District",
+      "representative-in-state-legislature-29th-district": "State House, 29th District",
+      "representative-in-state-legislature-54th-district": "State House, 54th District",
+      "representative-in-state-legislature-55th-district": "State House, 55th District",
+      "representative-in-state-legislature-57th-district": "State House, 57th District",
+      "representative-in-state-senate-12th-district": "State Senate, 12th District",
     },
   }
 }

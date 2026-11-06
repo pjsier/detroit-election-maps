@@ -180,9 +180,8 @@ const MapPage = (props) => {
             displayOverrides={props.displayOverrides}
           />
           <Show when={+year() === 2026}>
-            {/* TODO: */}
             <p class="unofficial-notice">
-              Partial, unofficial results as of Nov. 4, 4:56pm
+              Partial, unofficial results as of Nov. 6, 4:28pm
             </p>
           </Show>
           <Show when={props.embedAttribution}>
