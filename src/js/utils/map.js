@@ -56,6 +56,9 @@ const COLOR_OVERRIDES = {
     "Thomas E. Kuhn": "#d62728",
     "Kevin Hertel": "#1f77b4",
     "John Goldwater": "#d62728",
+    "Georgia Mae Lemmons": "#d62728",
+    "Terry E. Whitfield": "#2ca02c",
+    "Nicole Conaway": "#7f7f7f",
   },
 }
 

@@ -160,6 +160,7 @@ const elections = {
       "representative-in-state-legislature-55th-district": "State House, 55th District",
       "representative-in-state-legislature-57th-district": "State House, 57th District",
       "representative-in-state-senate-12th-district": "State Senate, 12th District",
+      "board-member-detroit-public-schools-community-district": "Board Member, DPSCD",
     },
   }
 }
